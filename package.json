@@ -1,0 +1,37 @@
+{
+  "name": "databank-graphic-design",
+  "version": "0.0.0",
+  "description": "Frontend application for Databank, a repository of Graphic Design educational resources",
+  "main": "src/index.js",
+  "scripts": {
+    "build-css": "cat style/fonts.css style/layout.css style/modules.css style/theme.css > dist/site.css",
+    "build-js": "browserify src/index.js -o dist/site.js",
+    "build-js-lib": "cat lib/*.js > dist/lib.js",
+    "build-js-bundle": "cat dist/lib.js dist/site.js > dist/bundle.js",
+    "watch-css": "catw style/fonts.css style/layout.css style/modules.css style/theme.css -o dist/site.css",
+    "watch-js": "watchify src/index.js -o dist/site.js -dv",
+    "watch-js-lib": "catw lib/*.js -o dist/lib.js -v",
+    "watch-js-bundle": "catw dist/lib.js dist/site.js -o dist/bundle.js -dv",
+    "watch": "npm run watch-js & npm run watch-css & npm run watch-js-lib & npm run watch-js-bundle",
+    "build": "npm run build-js & npm run build-js-lib & npm run build-css & npm run build-js-bundle"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rubillionaire/databank-gd-web.git"
+  },
+  "author": "Ruben Rodriguez",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/rubillionaire/databank-gd-web/issues"
+  },
+  "homepage": "http://rubillionaire.github.io/databank-gd-web",
+  "dependencies": {
+    "browserify": "~4.1.5",
+    "d3": "~3.4.8"
+  },
+  "devDependencies": {
+    "watchify": "~0.10.1",
+    "catw": "~0.2.0",
+    "foreman": "~0.3.0"
+  }
+}
