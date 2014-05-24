@@ -30,15 +30,19 @@ Returns the length of the `versions` array.
 
 ```Javascript
 {
-    id: 0
+    id: 0,
     versions: [{
-        title: 'Assignment Number One'
+        title: 'Assignment Number One',
         body: {
-            html: '<div><p>This is the text of the assignment<p></div>',
-            tags: ['Graphic Design', 'Paper']
-        }
+            html: '<div><p>This is th txt of th assignment<p></div>'
+        },
+        tags: ['Graphic Design', 'Paper']
     }, {
-        title: 'Assignment Number One'
+        title: 'Assignment Number One',
+        body: {
+            html: '<div><p>This is the text of the assignment<p></div>'
+        },
+        tags: ['Graphic Design', 'Paper']
     }],
     authors: [4, 5]
 }
@@ -72,7 +76,7 @@ Remove the resource id from the resources.
 ```Javascript
 {
     id: 0,
-    title: ''
+    title: '',
 
     // reference to objects that relate,
     // but are maintained elsewhere
