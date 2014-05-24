@@ -135,7 +135,7 @@ Returns a reference to the User.
 
 Views represent interfaces into the data models.
 
-## resource/<id>/<title>/<version>
+## `resource/<id>/<title>/<version>`
 
 `id` is an integer, it will determine the appropriate resource to load. The `title` will be loaded based on the resource. `version` is also an integer, specifying which integer to load. Not specificying a version lands you on the most recent version.
 
@@ -146,7 +146,7 @@ Views represent interfaces into the data models.
 - View the class (class/)
 - Fork resource (make a copy for you to start your own editing history)
 
-## resource/<id>/<title>/<version>/edit
+## `resource/<id>/<title>/<version>/edit`
 
 Editing interface for the resource of `id`, `title`, and `version`. Available to only those with priveldges. Starting with the owner.
 
@@ -157,7 +157,7 @@ Editing interface for the resource of `id`, `title`, and `version`. Available to
 - Discard your edits
 
 
-## class/<id>/<title>
+## `class/<id>/<title>`
 
 `id` is an integer, it will determine the appropriate class to load. The `title` will be loaded based on the class.
 
@@ -165,7 +165,7 @@ Editing interface for the resource of `id`, `title`, and `version`. Available to
 
 - View/link all resources in a class
 
-## class/<id>/<title>/edit
+## `class/<id>/<title>/edit`
 
 Same as above, but the editable version. Available to only those with priveldges. Starting with the owner.
 
@@ -175,7 +175,7 @@ Same as above, but the editable version. Available to only those with priveldges
 - Remove resources from the class
 
 
-## tag/<tag>
+## `tag/<tag>`
 
 `tag` is a string, identifying which resources to load.
 
