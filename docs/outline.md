@@ -8,7 +8,7 @@ Resources are the atomic unit of the site. Reou have editable titles, bodies, an
 
 ### Methods
 
-#### `initialize({title:, body:, tags:})`
+#### `Resource({title:, body:, tags:})`
 
 Creates a new `resource`, optionally with the new title, body and tags.
 Returns a reference to the new `resource`.
@@ -50,7 +50,7 @@ Classes are collections of resources.
 
 ### Methods
 
-#### `initialize({title:})`
+#### `Class({title:})`
 
 Intialize a new `class` with the `title` passed in.
 Returns a reference to the `class`.
@@ -85,7 +85,7 @@ Remove the resource id from the resources.
 
 ### Methods
 
-#### `initialize({name:})`
+#### `User({name:})`
 
 Intialize a new `user` with the `name` passed in.
 Returns a reference to the `user`.
