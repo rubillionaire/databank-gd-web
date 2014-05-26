@@ -1,0 +1,7 @@
+.resource-action--class--add,
+.resource-action--class--view,
+.resource-content--tags--tag,
+.resource-action--edit,
+.resource-action--versions--version {
+    cursor: pointer;
+}

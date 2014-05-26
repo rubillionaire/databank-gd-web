@@ -5,7 +5,9 @@ module.exports = function ResourceView () {
 
     self.dispatch = d3.dispatch('addToClass',
                                 'changeViewToClass',
-                                'setEditable');
+                                'changeViewToTag',
+                                'setEditable',
+                                'setVersion');
 
     var actions = {
         edit: {
@@ -14,7 +16,7 @@ module.exports = function ResourceView () {
             data: [{
                 text: 'Edit this assignment',
                 click: function (d) {
-                    self.dispatch.toggleEdit();
+                    self.dispatch.setEditable();
                 }
             }]
         },
@@ -42,14 +44,12 @@ module.exports = function ResourceView () {
 
     var layout_data = [{
         type: 'resource-structure',
-        name: 'column-actions',
-        cls: 'col--resource--actions left fixed',
-        data: actions
+        name: 'resource-actions',
+        cls: 'col--resource--actions left fixed'
     }, {
         type: 'resource-structure',
-        name: 'column-resource',
-        cls: 'col--resource--body right',
-        data: resource_model
+        name: 'resource-content',
+        cls: 'col--resource--body right'
     }];
 
     self.model = function (model) {
@@ -78,7 +78,7 @@ module.exports = function ResourceView () {
             })
             .each(function (d, i) {
                 var sel = d3.select(this);
-                if (d.name === 'column-actions') {
+                if (d.name === 'resource-actions') {
                     sel.call(layout_actions);
                 } else {
                     sel.call(layout_resource);
@@ -90,10 +90,88 @@ module.exports = function ResourceView () {
 
     function layout_actions (sel) {
         console.log('layout actions');
+
+        // edit
+        sel.append('div')
+            .attr('class', 'resource-action--edit')
+            .on('click', function (d) {
+                console.log('set editable');
+                self.dispatch.setEditable();
+            })
+            .append('p')
+            .text('Edit this assignment.');
+
+        // versions
+        sel.append('div')
+            .attr('class', 'resource-action--versions')
+            .append('ul')
+            .selectAll('.resource-action--versions--version')
+            .data(d3.range(resource_model.versions.count()))
+            .enter()
+            .append('li')
+            .attr('class', 'resource-action--versions--version')
+            .on('click', function (d) {
+                console.log('set version');
+                self.dispatch.setVersion(d);
+            })
+            .append('p')
+            .text(function (d) {
+                return 'v.' + (d+1);
+            });
+
+        // class
+        var actions_class = sel.append('div')
+            .attr('class', 'resource-action--class');
+
+        actions_class.append('div')
+            .attr('class', 'resource-action--class--add')
+            .on('click', function () {
+                self.dispatch.addToClass(resource_model);
+            })
+            .append('p')
+            .text('Add to Class');
+
+        actions_class.append('div')
+            .attr('class', 'resource-action--class--view')
+            .on('click', function () {
+                self.dispatch.changeViewToClass();
+            })
+            .append('p')
+            .text('View Class');
+
     }
 
-    function layout_resource (self) {
+    function layout_resource (sel) {
+        var data = resource_model.data();
         console.log('layout resource');
+        console.log(data);
+
+        var version = data.versions.length - 1;
+
+        sel.append('h3')
+            .attr('class', 'resource-content--title')
+            .text(data.versions[version].title);
+
+        sel.append('div')
+            .attr('class', 'resource-content--body')
+            .html(data.versions[version].body.html);
+
+        sel.append('div')
+            .attr('class', 'resource-content--tags')
+            .append('ul')
+            .selectAll('.resource-content--tags--tag')
+            .data(data.versions[version].tags)
+            .enter()
+            .append('li')
+            .on('click', function (d) {
+                console.log('change view to tag: ', d);
+                self.dispatch.changeViewToTag(d);
+            })
+            .attr('class', 'resource-content--tags--tag')
+            .append('p')
+            .text(function (d) {
+                return d;
+            });
     }
 
     return self;

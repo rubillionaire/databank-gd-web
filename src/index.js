@@ -4,7 +4,7 @@ var AuthorModel = function () {
     var self = {};
     self.id = function () {
         return 5;
-    }
+    };
     return self;
 };
 
