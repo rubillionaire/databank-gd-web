@@ -4,26 +4,39 @@ All of the data that will be stored in the application.
 
 ## Resource
 
-Resources are the atomic unit of the site. Reou have editable titles, bodies, and tags.
+Resources are the atomic unit of the site. Resources have editable titles, bodies, and tags.
 
 ### Methods
 
-#### `Resource({title:, body:, tags:})`
+#### `Resource()`
 
-Creates a new `resource`, optionally with the new title, body and tags.
+Creates a new `resource`.
 Returns a reference to the new `resource`.
 
 #### `id()`
 
 Returns the `id` of the object.
 
-#### `versions.new({title:, body:, tags:})`
+#### `versions.add({title:, body:, tags:})`
 
 Adds a new version to the versions array.
+
+#### `versions.get(version_id)`
+
+Return the version of the given `version_id`. If the `version_id` is out of the arrays range, returns `undefined`.
 
 #### `versions.count()`
 
 Returns the length of the `versions` array.
+
+#### `authors()`
+
+Returns the array of author indices.
+
+#### `authors.add(author_id)`
+
+Add a new author ID to the `authors` array.
+Return a reference to the `resource`.
 
 
 ### Structure
