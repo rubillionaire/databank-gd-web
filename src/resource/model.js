@@ -30,12 +30,20 @@ module.exports = function ResourceModel () {
         return self;
     };
 
-    self.data = function () {
-        return {
-            id: id,
-            versions: versions,
-            authors: authors
-        };
+    self.data = function (x) {
+        if (!arguments.length) {
+            return {
+                id: id,
+                versions: versions,
+                authors: authors
+            };
+        }
+
+        id = x.id;
+        versions = x.versions;
+        authors = x.authors;
+
+        return self;
     };
 
     return self;

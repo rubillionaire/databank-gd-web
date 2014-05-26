@@ -9,47 +9,16 @@ module.exports = function ResourceView () {
                                 'setEditable',
                                 'setVersion');
 
-    var actions = {
-        edit: {
-            select_value: '.action-edit-resource',
-            cls: 'action-edit-resource',
-            data: [{
-                text: 'Edit this assignment',
-                click: function (d) {
-                    self.dispatch.setEditable();
-                }
-            }]
-        },
-        versions: {
-            select_value: '.action-select-version',
-            cls: 'action-edit-resource',
-            data: []
-        },
-        class: {
-            select_value: '.action-on-class',
-            cls: 'action-on-class',
-            data: [{
-                text: 'Add to Class',
-                click: function (d) {
-                    self.dispatch.addToClass(resource_model);
-                }
-            }, {
-                text: 'View Class',
-                click: function (d) {
-                    self.dispatch.changeViewToClass();
-                }
-            }]
-        }
-    };
-
     var layout_data = [{
         type: 'resource-structure',
         name: 'resource-actions',
-        cls: 'col--resource--actions left fixed'
+        cls: 'col--resource--actions left fixed',
+        layout: layout_actions
     }, {
         type: 'resource-structure',
         name: 'resource-content',
-        cls: 'col--resource--body right'
+        cls: 'col--resource--body right',
+        layout: layout_content
     }];
 
     self.model = function (model) {
@@ -78,19 +47,13 @@ module.exports = function ResourceView () {
             })
             .each(function (d, i) {
                 var sel = d3.select(this);
-                if (d.name === 'resource-actions') {
-                    sel.call(layout_actions);
-                } else {
-                    sel.call(layout_resource);
-                }
+                sel.call(d.layout);
             });
 
         return self;
     };
 
     function layout_actions (sel) {
-        console.log('layout actions');
-
         // edit
         sel.append('div')
             .attr('class', 'resource-action--edit')
@@ -141,10 +104,8 @@ module.exports = function ResourceView () {
 
     }
 
-    function layout_resource (sel) {
+    function layout_content (sel) {
         var data = resource_model.data();
-        console.log('layout resource');
-        console.log(data);
 
         var version = data.versions.length - 1;
 
