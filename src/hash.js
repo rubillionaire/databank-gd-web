@@ -78,7 +78,7 @@ module.exports = function hashFactory () {
             args.push('edit');
         }
 
-        return '#' + args.join('/');
+        return '#/' + args.join('/');
     }
 
     function escape_for_url (string) {

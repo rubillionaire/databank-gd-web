@@ -18,6 +18,9 @@ module.exports = function router (context) {
         if (d.view === 'resource') {
             context.resource.render(d);
         }
+        if (d.view === 'index') {
+            context.index.render();
+        }
 
         previous_view = d;
     }
