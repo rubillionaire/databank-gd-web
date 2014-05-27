@@ -10,6 +10,8 @@ module.exports = function ResourceView () {
                                 'changeViewToClass',
                                 'changeViewToTag',
                                 'setEditable',
+                                'cancelEditable',
+                                'saveEdtiable',
                                 'setVersion');
 
     var layout_actionable_data = [{
@@ -22,6 +24,13 @@ module.exports = function ResourceView () {
         name: 'resource-content',
         cls: 'col--resource--body right',
         layout: layout_actionable_content
+    }];
+
+    var layout_editable_data = [{
+        type: 'resource-structure',
+        name: 'resource-content',
+        cls: 'col--resource--body editable right',
+        layout: layout_editable_content
     }];
 
     self.model = function (model) {
@@ -70,13 +79,24 @@ module.exports = function ResourceView () {
         } else {
             render_method = render_actionable;
         }
+        console.log('render_method');
+        console.log(render_method);
         grid.call(render_method);
 
         return self;
     };
 
     function render_editable (sel) {
-
+        var layout = sel.selectAll('.resource-structure')
+            .data(layout_editable_data)
+            .enter()
+            .append('div')
+            .attr('class', function (d) {
+                return d.cls + ' ' + d.type;
+            })
+            .each(function (d, i) {
+                d3.select(this).call(d.layout);
+            });
     }
 
     function render_actionable (sel) {
@@ -100,6 +120,7 @@ module.exports = function ResourceView () {
             .attr('class', 'resource-action--edit')
             .on('click', function (d) {
                 console.log('set editable');
+                self.edit(true);
                 self.dispatch.setEditable();
             })
             .append('p')
@@ -183,6 +204,49 @@ module.exports = function ResourceView () {
             .append('p')
             .text(function (d) {
                 return d;
+            });
+    }
+
+    function layout_editable_content (sel) {
+        var data = resource_model.data();
+
+        var version = resource_model
+                            .versions
+                            .get(version_displayed);
+
+        var form = sel.append('form')
+            .attr('name', 'resource-content-form');
+
+        form.append('input')
+            .attr('type', 'text')
+            .attr('name', 'resource-content--title--editable')
+            .property('value', version.title);
+
+        // replace with an html editor.
+        // body.html in, pull out value and
+        // stash it back into body.html
+        form.append('textarea')
+            .attr('name', 'resource-content--body--editable')
+            .property('value', version.body.html);
+
+        form.append('button')
+            .attr('class', 'resource-content-form--button')
+            .attr('type', 'button')
+            .attr('value', 'Cancel')
+            .text('Cancel')
+            .on('click', function () {
+                self.edit(false);
+                self.dispatch.cancelEditable();
+            });
+
+        form.append('button')
+            .attr('class', 'resource-content-form--button')
+            .attr('type', 'submit')
+            .attr('value', 'Save')
+            .text('Save')
+            .on('click', function () {
+                self.edit(false);
+                self.dispatch.saveEditable();
             });
     }
 

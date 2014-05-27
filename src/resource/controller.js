@@ -3,16 +3,22 @@ var View  = require('./view');
 
 module.exports = function ResourceController (context) {
     var self = {};
+    var data;
+    var model;
+    var view;
 
     self.render = function (d) {
-        var data  = context.data.get('resource', d.id);
-        var model = Model().data(data);
-        var view  = View()
-                        .container(context.body_sel)
-                        .model(model);
+        data  = context.data.get('resource', d.id);
+        model = Model().data(data);
+        view  = View()
+                    .container(context.body_sel)
+                    .model(model);
 
         if (d.version) {
             view.version(d.version);
+        }
+        if (d.edit) {
+            view.edit(d.edit);
         }
 
         view.dispatch
@@ -26,21 +32,29 @@ module.exports = function ResourceController (context) {
 
             })
             .on('setVersion.controller', function () {
-                var version_number = view.version();
-                var version = model.versions.get(version_number);
-                context.hash.is({
-                    view: 'resource',
-                    id: model.id(),
-                    title: version.title,
-                    version: version_number,
-                    edit: view.edit()
-                });
+                stash_and_rerender_state();
+            })
+            .on('setEditable.controller', function () {
+                stash_and_rerender_state();
+            })
+            .on('cancelEditable.controller', function () {
+                stash_and_rerender_state();
             });
 
         view.render();
     };
 
-
+    function stash_and_rerender_state () {
+        var version_number = view.version();
+        var version = model.versions.get(version_number);
+        context.hash.is({
+            view: 'resource',
+            id: model.id(),
+            title: version.title,
+            version: version_number,
+            edit: view.edit()
+        });
+    }
     
     return self;
 };

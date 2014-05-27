@@ -44,11 +44,12 @@ module.exports = function hashFactory () {
         var parsed = {
             view: 'index'
         };
-
+        console.log(args.length);
         if (args[0] === 'resource') {
             parsed = {
                 view: 'resource',
-                id: args[1]
+                id: args[1],
+                edit: false
             };
             if (args.length >= 3) {
                 parsed.title = args[2];
@@ -56,7 +57,8 @@ module.exports = function hashFactory () {
             if (args.length >= 4) {
                 parsed.version = args[3];
 
-            } else if (args.length >= 5) {
+            }
+            if (args.length >= 5) {
                 parsed.edit = true;
             }
         }
