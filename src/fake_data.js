@@ -130,6 +130,7 @@ module.exports = function () {
     })
 
     self.set = function (namespace, id, d) {
+        console.log('setting: ' + namespace + '!' + id);
         localStorage.setItem(namespace + '!' + id,
                              JSON.stringify(d));
     };

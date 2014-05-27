@@ -28,7 +28,8 @@
 }
 @media only screen and (min-width: 1400px) {
     
-}.resource-content-form--button,
+}.resource-content--tags--editable,
+.resource-content-form--button,
 .resource-action--class--add,
 .resource-action--class--view,
 .resource-content--tags--tag,

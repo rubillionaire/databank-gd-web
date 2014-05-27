@@ -8,7 +8,7 @@ module.exports = function ResourceController (context) {
     var view;
 
     self.render = function (d) {
-        data  = context.data.get('resource', d.id);
+        data  = context.datastore.get('resource', d.id);
         model = Model().data(data);
         view  = View()
                     .container(context.body_sel)
@@ -33,12 +33,33 @@ module.exports = function ResourceController (context) {
             })
             .on('setVersion.controller', function () {
                 stash_and_rerender_state();
+                console.log('cancelEditable');
             })
             .on('setEditable.controller', function () {
                 stash_and_rerender_state();
+                console.log('cancelEditable');
             })
             .on('cancelEditable.controller', function () {
                 stash_and_rerender_state();
+                console.log('cancelEditable');
+            })
+            .on('saveEditable.controller', function (d) {
+                console.log('save editable.');
+                model.versions.add(d);
+                context.datastore.set('resource',
+                                      model.id(),
+                                      model.data());
+
+                var version_number = model.versions.count();
+                var version = model.versions.get(version_number);
+
+                context.hash.is({
+                    view: 'resource',
+                    id: model.id(),
+                    title: version.title,
+                    version: version_number,
+                    edit: view.edit()
+                });
             });
 
         view.render();

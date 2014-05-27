@@ -22,6 +22,7 @@ module.exports = function hashFactory () {
         }
 
         window.location = hash;
+        console.log('set hash: ', hash);
 
         return hash;
     };
@@ -44,7 +45,7 @@ module.exports = function hashFactory () {
         var parsed = {
             view: 'index'
         };
-        console.log(args.length);
+
         if (args[0] === 'resource') {
             parsed = {
                 view: 'resource',

@@ -11,7 +11,7 @@ module.exports = function ResourceView () {
                                 'changeViewToTag',
                                 'setEditable',
                                 'cancelEditable',
-                                'saveEdtiable',
+                                'saveEditable',
                                 'setVersion');
 
     var layout_actionable_data = [{
@@ -79,8 +79,7 @@ module.exports = function ResourceView () {
         } else {
             render_method = render_actionable;
         }
-        console.log('render_method');
-        console.log(render_method);
+
         grid.call(render_method);
 
         return self;
@@ -215,9 +214,10 @@ module.exports = function ResourceView () {
                             .get(version_displayed);
 
         var form = sel.append('form')
-            .attr('name', 'resource-content-form');
+            .attr('name', 'resource-content-form')
+            .attr('onSubmit', 'return false;');
 
-        form.append('input')
+        var editable_title = form.append('input')
             .attr('type', 'text')
             .attr('name', 'resource-content--title--editable')
             .property('value', version.title);
@@ -225,9 +225,26 @@ module.exports = function ResourceView () {
         // replace with an html editor.
         // body.html in, pull out value and
         // stash it back into body.html
-        form.append('textarea')
+        var editable_body_html = form.append('textarea')
+            .attr('id', 'resource-content--body--editable')
             .attr('name', 'resource-content--body--editable')
             .property('value', version.body.html);
+
+        var editable_tags = form
+            .selectAll('.resource-content--tags--editable')
+            .data(version.tags)
+            .enter()
+            .append('label')
+            .text(function (d) {
+                return d;
+            })
+            .append('input')
+            .attr('class', 'resource-content--tags--editable')
+            .attr('type', 'checkbox')
+            .property('checked', true)
+            .attr('value', function (d) {
+                return d;
+            });
 
         form.append('button')
             .attr('class', 'resource-content-form--button')
@@ -246,8 +263,43 @@ module.exports = function ResourceView () {
             .text('Save')
             .on('click', function () {
                 self.edit(false);
-                self.dispatch.saveEditable();
+                console.log('saved');
+                var tags = [];
+                editable_tags.each(function (d, i) {
+                    if (d3.select(this).property('checked')) {
+                        tags.push(d);
+                    }
+                });
+                var new_version = {
+                    title: editable_title.property('value'),
+                    body: {
+                        html: editable_body_html.property('value')
+                    },
+                    tags: tags
+                };
+
+                if ((new_version.title !== version.title) |
+                    (new_version.body.html !== version.body.html) |
+                    (!(arrayEquals(new_version.tags,
+                                 version.tags)))) {
+
+                   self.dispatch.saveEditable(new_version);
+                } else {
+                    self.dispatch.cancelEditable();
+                }
             });
+    }
+
+    function arrayEquals (arr1, arr2) {
+        if (arr1.length !== arr2.length) {
+            return false;
+        }
+        for (var i = arr1.length; i--; ) {
+            if (arr1[i] !== arr2[i]) {
+                return false;
+            }
+        }
+        return true;
     }
 
     return self;
