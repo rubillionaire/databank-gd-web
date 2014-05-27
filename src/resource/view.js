@@ -3,22 +3,25 @@ module.exports = function ResourceView () {
     var resource_model = {};
     var container_sel;
 
+    var edit = false;
+    var version_displayed;
+
     self.dispatch = d3.dispatch('addToClass',
                                 'changeViewToClass',
                                 'changeViewToTag',
                                 'setEditable',
                                 'setVersion');
 
-    var layout_data = [{
+    var layout_actionable_data = [{
         type: 'resource-structure',
         name: 'resource-actions',
         cls: 'col--resource--actions left fixed',
-        layout: layout_actions
+        layout: layout_actionable_actions
     }, {
         type: 'resource-structure',
         name: 'resource-content',
         cls: 'col--resource--body right',
-        layout: layout_content
+        layout: layout_actionable_content
     }];
 
     self.model = function (model) {
@@ -33,13 +36,53 @@ module.exports = function ResourceView () {
         return self;
     };
 
+    self.version = function (x) {
+        if (!arguments.length) return version_displayed;
+        version_displayed = +x;
+        return self;
+    };
+
+    self.edit = function (x) {
+        if (!arguments.length) return edit;
+        edit = x;
+        return self;
+    };
+
     self.render = function () {
+        if ((!self.version()) |
+            (self.version() > resource_model
+                                    .versions
+                                    .count())) {
+
+            self.version(resource_model
+                            .versions
+                            .count());
+        }
+
         var grid = container_sel
+                        .html('')
                         .append('div')
                         .attr('class', 'grid');
 
-        var layout = grid.selectAll('.resource-structure')
-            .data(layout_data)
+        var render_method;
+        if (edit) {
+            render_method = render_editable;
+        } else {
+            render_method = render_actionable;
+        }
+        grid.call(render_method);
+
+        return self;
+    };
+
+    function render_editable (sel) {
+
+    }
+
+    function render_actionable (sel) {
+
+        var layout = sel.selectAll('.resource-structure')
+            .data(layout_actionable_data)
             .enter()
             .append('div')
             .attr('class', function (d) {
@@ -49,11 +92,9 @@ module.exports = function ResourceView () {
                 var sel = d3.select(this);
                 sel.call(d.layout);
             });
+    }
 
-        return self;
-    };
-
-    function layout_actions (sel) {
+    function layout_actionable_actions (sel) {
         // edit
         sel.append('div')
             .attr('class', 'resource-action--edit')
@@ -72,10 +113,18 @@ module.exports = function ResourceView () {
             .data(d3.range(resource_model.versions.count()))
             .enter()
             .append('li')
-            .attr('class', 'resource-action--versions--version')
+            .attr('class', function (d) {
+                var cls = 'resource-action--versions--version';
+                if ((d + 1) === self.version()) {
+                    cls += ' selected';
+                }
+                return cls;
+            })
             .on('click', function (d) {
                 console.log('set version');
-                self.dispatch.setVersion(d);
+                console.log(d+1);
+                self.version(d+1);
+                self.dispatch.setVersion();
             })
             .append('p')
             .text(function (d) {
@@ -104,24 +153,26 @@ module.exports = function ResourceView () {
 
     }
 
-    function layout_content (sel) {
+    function layout_actionable_content (sel) {
         var data = resource_model.data();
 
-        var version = data.versions.length - 1;
+        var version = resource_model
+                            .versions
+                            .get(version_displayed);
 
         sel.append('h3')
             .attr('class', 'resource-content--title')
-            .text(data.versions[version].title);
+            .text(version.title);
 
         sel.append('div')
             .attr('class', 'resource-content--body')
-            .html(data.versions[version].body.html);
+            .html(version.body.html);
 
         sel.append('div')
             .attr('class', 'resource-content--tags')
             .append('ul')
             .selectAll('.resource-content--tags--tag')
-            .data(data.versions[version].tags)
+            .data(version.tags)
             .enter()
             .append('li')
             .on('click', function (d) {

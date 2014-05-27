@@ -5,3 +5,7 @@
 .resource-action--versions--version {
     cursor: pointer;
 }
+
+.selected p {
+    font-weight: bold;
+}

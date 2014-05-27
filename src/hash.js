@@ -48,9 +48,11 @@ module.exports = function hashFactory () {
         if (args[0] === 'resource') {
             parsed = {
                 view: 'resource',
-                id: args[1],
-                title: args[2]
+                id: args[1]
             };
+            if (args.length >= 3) {
+                parsed.title = args[2];
+            }
             if (args.length >= 4) {
                 parsed.version = args[3];
 
@@ -65,7 +67,8 @@ module.exports = function hashFactory () {
     function format_resource_hash(d) {
         var args = ['resource',
                     d.id,
-                    escape_for_url(d.versions[d.version].title),
+                    d.title ?
+                        escape_for_url(d.title) : 'resource',
                     d.version];
 
         if (d.edit) {

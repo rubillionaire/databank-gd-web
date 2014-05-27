@@ -14,9 +14,12 @@ module.exports = function ResourceModel () {
         return self;
     };
     self.versions.get = function (version_id) {
-        if (version_id > (versions.length - 1)) return undefined;
+        // don't make the user think about the fact
+        // that counting starts from 0. Because
+        // there will never be a version 0.
+        if (version_id > versions.length) return undefined;
         
-        return versions[version_id];
+        return versions[version_id-1];
     };
     self.versions.count = function () {
         return versions.length;
