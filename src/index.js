@@ -1,7 +1,7 @@
 var Hash     = require('./hash');
 var Router   = require('./router');
 var Data     = require('./fake_data');
-var Resource = require('./resource/controller.js');
+var Resource = require('./ResourceViewController');
 
 var body_sel = d3.select('body');
 
