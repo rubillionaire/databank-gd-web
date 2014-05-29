@@ -1,6 +1,8 @@
 module.exports = function ResourceView () {
     var self = {};
+
     var resource_model = {};
+    var tags           = {};
     var container_sel;
 
     var edit = false;
@@ -33,9 +35,15 @@ module.exports = function ResourceView () {
         layout: layout_editable_content
     }];
 
-    self.model = function (model) {
+    self.resourceModel = function (model) {
         if (!arguments.length) return resource_model;
         resource_model = model;
+        return self;
+    };
+
+    self.tags = function (x) {
+        if (!arguments.length) return tags;
+        tags = x;
         return self;
     };
 
@@ -125,6 +133,7 @@ module.exports = function ResourceView () {
             .append('p')
             .text('Edit this assignment.');
 
+        console.log(resource_model.versions.count());
         // versions
         sel.append('div')
             .attr('class', 'resource-action--versions')
@@ -158,7 +167,7 @@ module.exports = function ResourceView () {
         actions_class.append('div')
             .attr('class', 'resource-action--class--add')
             .on('click', function () {
-                self.dispatch.addToClass(resource_model);
+                self.dispatch.addToClass();
             })
             .append('p')
             .text('Add to Class');
@@ -197,12 +206,15 @@ module.exports = function ResourceView () {
             .append('li')
             .on('click', function (d) {
                 console.log('change view to tag: ', d);
-                self.dispatch.changeViewToTag(d);
+                self.dispatch.changeViewToTag({
+                    id: d,
+                    name: tags[d]
+                });
             })
             .attr('class', 'resource-content--tags--tag')
             .append('p')
             .text(function (d) {
-                return d;
+                return tags[d];
             });
     }
 
@@ -236,7 +248,7 @@ module.exports = function ResourceView () {
             .enter()
             .append('label')
             .text(function (d) {
-                return d;
+                return tags[d];
             })
             .append('input')
             .attr('class', 'resource-content--tags--editable')
@@ -264,10 +276,10 @@ module.exports = function ResourceView () {
             .on('click', function () {
                 self.edit(false);
                 console.log('saved');
-                var tags = [];
+                var selected_tags = [];
                 editable_tags.each(function (d, i) {
                     if (d3.select(this).property('checked')) {
-                        tags.push(d);
+                        selected_tags.push(d);
                     }
                 });
                 var new_version = {
@@ -275,7 +287,7 @@ module.exports = function ResourceView () {
                     body: {
                         html: editable_body_html.property('value')
                     },
-                    tags: tags
+                    tags: selected_tags
                 };
 
                 if ((new_version.title !== version.title) |

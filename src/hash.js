@@ -17,8 +17,12 @@ module.exports = function hashFactory () {
 
         // setter
         var hash = '/';
-        if (d.view === 'resource') {
+        if (d.controller === 'resource') {
             hash = format_resource_hash(d);
+        }
+        else
+        if (d.controller === 'class') {
+            hash = format_class_hash(d);
         }
 
         window.location = hash;
@@ -28,6 +32,8 @@ module.exports = function hashFactory () {
     };
 
     function parse_hash (hash) {
+        var integer_regex = /^\d+$/;
+
         if (hash.indexOf('#') === 0) {
             hash = hash.substr(1);
         }
@@ -43,12 +49,12 @@ module.exports = function hashFactory () {
         })(hash.split('/'));
 
         var parsed = {
-            view: 'index'
+            controller: 'index'
         };
 
         if (args[0] === 'resource') {
             parsed = {
-                view: 'resource',
+                controller: 'resource',
                 id: args[1],
                 edit: false
             };
@@ -57,10 +63,43 @@ module.exports = function hashFactory () {
             }
             if (args.length >= 4) {
                 parsed.version = args[3];
-
             }
             if (args.length >= 5) {
                 parsed.edit = true;
+            }
+        }
+        else
+        if (args[0] === 'class') {
+            parsed = {
+                controller: 'class',
+                action: undefined
+            };
+
+            if (args.length >= 2) {
+                if (args[1].match(integer_regex)) {
+                    // viewing a particular class
+                    parsed.id = args[1];
+                    if (args.length >= 3) {
+                        parsed.title = args[2];
+                    }
+                    if ((args.length >= 4) &
+                        (args[3] === 'edit')) {
+                        parsed.action = args[3];
+                    }
+                } else {
+                    // some action is being taken on the class
+
+                    if (args[1] === 'add') {
+                        parsed.action = args[1];
+                        if (args[2] === 'resource') {
+                            parsed.type = args[2];
+
+                            if (args.length >= 4) {
+                                parsed.resource_id = args[3];
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -74,8 +113,31 @@ module.exports = function hashFactory () {
                         escape_for_url(d.title) : 'resource',
                     d.version];
 
-        if (d.edit) {
+        if (d.action === 'edit') {
             args.push('edit');
+        }
+
+        return '#/' + args.join('/');
+    }
+
+    function format_class_hash (d) {
+        var args = ['class'];
+
+        // default action is to view
+        if (d.action === 'add') {
+            // action taken on the class
+            // such as 'add' -- 'add to class'
+            args.push(d.action);
+            args.push(d.type);
+        }
+
+        args.push(d.resource_id);
+        args.push(escape_for_url(d.resource_title));
+
+        if (d.action === 'edit') {
+            // should never be a state where
+            // edit is true & action is a string
+            args.push(d.action);
         }
 
         return '#/' + args.join('/');

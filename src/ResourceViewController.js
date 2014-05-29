@@ -3,16 +3,26 @@ var ResourceView  = require('./view/resource');
 
 module.exports = function ResourceController (context) {
     var self = {};
-    var data;
-    var model;
+    var resource_data;
+    var resource_model;
+    var tag_data;
     var view;
 
     self.render = function (d) {
-        data  = context.datastore.get('resource', d.id);
-        model = ResourceModel().data(data);
+        resource_data  = context.datastore.get('resources', d.id);
+        resource_model = ResourceModel().data(resource_data);
+
+        var tag_ids = resource_model.tags();
+        tag_data = {};
+        tag_ids.forEach(function (d, i) {
+            var tag = context.datastore.get('tags', d);
+            tag_data[tag.id] = tag.name;
+        });
+
         view  = ResourceView()
                     .container(context.body_sel)
-                    .model(model);
+                    .resourceModel(resource_model)
+                    .tags(tag_data);
 
         if (d.version) {
             view.version(d.version);
@@ -22,14 +32,30 @@ module.exports = function ResourceController (context) {
         }
 
         view.dispatch
-            .on('changeViewToTag.controller', function () {
-
+            .on('changeViewToTag.controller', function (d) {
+                context.hash.is({
+                    controller: 'tag',
+                    action: 'view',
+                    tag_id: d.id,
+                    tag_name: d.name
+                });
             })
-            .on('addToClass.controller', function (d) {
+            .on('addToClass.controller', function () {
+                var version_number = view.version();
+                var version = resource_model
+                                    .versions
+                                    .get(version_number);
+                context.hash.is({
+                    controller: 'class',
+                    action: 'add',
+                    type: 'resource',
+                    resource_id: resource_model.id(),
+                    resource_title: version.title
+                });
 
             })
             .on('changeViewToClass.controller', function (d) {
-
+                console.log('changeViewToClass');
             })
             .on('setVersion.controller', function () {
                 stash_and_rerender_state();
@@ -45,20 +71,24 @@ module.exports = function ResourceController (context) {
             })
             .on('saveEditable.controller', function (d) {
                 console.log('save editable.');
-                model.versions.add(d);
-                context.datastore.set('resource',
-                                      model.id(),
-                                      model.data());
+                resource_model.versions.add(d);
+                context.datastore.set('resources',
+                                      resource_model.id(),
+                                      resource_model.data());
 
-                var version_number = model.versions.count();
-                var version = model.versions.get(version_number);
+                var version_number = resource_model
+                                        .versions
+                                        .count();
+                var version = resource_model
+                                    .versions
+                                    .get(version_number);
 
                 context.hash.is({
-                    view: 'resource',
-                    id: model.id(),
+                    controller: 'resource',
+                    action: view.edit() ? 'edit' : 'view',
+                    id: resource_model.id(),
                     title: version.title,
-                    version: version_number,
-                    edit: view.edit()
+                    version: version_number
                 });
             });
 
@@ -67,13 +97,15 @@ module.exports = function ResourceController (context) {
 
     function stash_and_rerender_state () {
         var version_number = view.version();
-        var version = model.versions.get(version_number);
+        var version = resource_model
+                        .versions
+                        .get(version_number);
         context.hash.is({
-            view: 'resource',
-            id: model.id(),
+            controller: 'resource',
+            action: view.edit() ? 'edit' : 'view',
+            id: resource_model.id(),
             title: version.title,
-            version: version_number,
-            edit: view.edit()
+            version: version_number
         });
     }
     

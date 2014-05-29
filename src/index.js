@@ -2,6 +2,7 @@ var Hash     = require('./hash');
 var Router   = require('./router');
 var Data     = require('./fake_data');
 var Resource = require('./ResourceViewController');
+var Class    = require('./ClassViewController');
 var Index    = require('./IndexViewController');
 
 var body_sel = d3.select('body');
@@ -19,6 +20,7 @@ function database () {
 
     // view controllers
     context.resource  = Resource(context);
+    context.class_    = Class(context);
     context.index     = Index(context);
     context.router    = Router(context);
 

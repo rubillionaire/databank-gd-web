@@ -1,7 +1,7 @@
 module.exports = function router (context) {
     var self = {};
     var previous_view = {
-        view: 'index'
+        controller: 'index'
     };
 
     context.hash.dispatch
@@ -15,11 +15,24 @@ module.exports = function router (context) {
     };
 
     function set (d) {
-        if (d.view === 'resource') {
+        if (d.controller === 'resource') {
             context.resource.render(d);
         }
-        if (d.view === 'index') {
+        else
+        if (d.controller === 'class') {
+            if (d.action) {
+                context.class_.actions.add.render(d);
+            } else {
+                context.class_.render(d);
+            }
+        }
+        else
+        if (d.controller === 'index') {
             context.index.render();
+        }
+        else
+        if (d.controller === '404') {
+            // context.error.render('404')
         }
 
         previous_view = d;

@@ -29,7 +29,7 @@ module.exports = function () {
                   'as possible when examining your location.'+
                   '</p>'
             },
-            tags: ["Maps", "Doug Scott", "Making Meaning"]
+            tags: [0, 1, 2]
             }],
             authors: [0]
         }, {
@@ -60,7 +60,7 @@ module.exports = function () {
                   'as possible when examining your location.'+
                   '</p>'
             },
-            tags: ["Maps", "Doug Scott", "Making Meaning"]
+            tags: [0, 1, 2]
             }, {
             title: 'Mapping: The Journey as Context for Narrative',
             body: {
@@ -87,7 +87,7 @@ module.exports = function () {
                   'as possible when examining your location.'+
                   '</p>'
             },
-            tags: ["Maps", "Doug Scott", "Making Meaning"]
+            tags: [0, 1, 2]
             }],
             authors: [1]
         }],
@@ -112,12 +112,22 @@ module.exports = function () {
             name: 'Anther Kiley',
             resources: [1],
             classes: [1]
+        }],
+        tags: [{
+          id: 0,
+          name: "Maps"
+        }, {
+          id: 1,
+          name: "Doug Scott"
+        }, {
+          id: 2,
+          name: "Making Meaning"
         }]
     };
 
 
     data.resources.forEach(function (d) {
-        localStorage.setItem('resource!' + d.id,
+        localStorage.setItem('resources!' + d.id,
                             JSON.stringify(d));
     })
     data.classes.forEach(function (d) {
@@ -127,6 +137,10 @@ module.exports = function () {
     data.users.forEach(function (d) {
         localStorage.setItem('users!' + d.id,
                             JSON.stringify(d));
+    })
+    data.tags.forEach(function (d) {
+      localStorage.setItem('tags!' + d.id,
+                           JSON.stringify(d));
     })
 
     self.set = function (namespace, id, d) {

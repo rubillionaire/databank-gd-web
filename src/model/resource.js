@@ -1,8 +1,10 @@
 module.exports = function ResourceModel () {
     var self = {};
+
     var id;
     var versions = [];
-    var authors = [];
+    var authors  = [];
+    var classes  = [];
 
     self.id = function () {
         return id;
@@ -29,25 +31,77 @@ module.exports = function ResourceModel () {
         return authors;
     };
     self.authors.add = function (author_id) {
-        authors.push(author_id);
+        if (!arguments.length) throw "Need author_id";
+
+        var in_authors = false;
+        authors.forEach(function (d, i) {
+            if (d === author_id) {
+                in_authors = true;
+            }
+        });
+
+        if (!in_authors) {
+            authors.push(author_id);
+        }
+
         return self;
+    };
+    self.authors.remove = function (author_id) {
+        if (!arguments.length) throw "Need author_id";
+        var index_to_remove;
+        authors.forEach(function (d, i) {
+            if (d === author_id) {
+                index_to_remove = i;
+            }
+        });
+        if (index_to_remove) {
+            authors.splice(index_to_remove, 1);
+        }
+        return self;
+    };
+
+    self.tags = function () {
+        var tags = [];
+        versions.forEach(function (d, i) {
+            tags = tags.concat(d.tags);
+        });
+        return get_unique(tags);
     };
 
     self.data = function (x) {
         if (!arguments.length) {
             return {
-                id: id,
+                id      : id,
                 versions: versions,
-                authors: authors
+                authors : authors,
+                tags    : tags,
+                classes : classes
             };
         }
 
-        id = x.id;
+        id       = x.id;
         versions = x.versions;
-        authors = x.authors;
+        authors  = x.authors;
+        tags     = x.tags;
+        classes  = x.classes;
 
         return self;
     };
+
+    function get_unique (arr) {
+        var u = {};
+        var a = [];
+
+        for (var i = 0; i < arr.length; i++) {
+            if (u.hasOwnProperty(arr[i])) {
+                continue;
+            }
+            a.push(arr[i]);
+            u[arr[i]] = 1;
+        }
+
+        return a;
+    }
 
     return self;
 };
