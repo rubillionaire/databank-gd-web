@@ -2,6 +2,7 @@ module.exports = function ResourceView () {
     var self = {};
 
     var resource_model = {};
+    var educators      = {};
     var tags           = {};
     var container_sel;
 
@@ -14,7 +15,8 @@ module.exports = function ResourceView () {
                                 'setEditable',
                                 'cancelEditable',
                                 'saveEditable',
-                                'setVersion');
+                                'setVersion',
+                                'changeViewToEducator');
 
     var layout_actionable_data = [{
         type: 'resource-structure',
@@ -44,6 +46,12 @@ module.exports = function ResourceView () {
     self.tags = function (x) {
         if (!arguments.length) return tags;
         tags = x;
+        return self;
+    };
+
+    self.educators = function (x) {
+        if (!arguments.length) return educators;
+        educators = x;
         return self;
     };
 
@@ -199,6 +207,8 @@ module.exports = function ResourceView () {
 
         sel.append('div')
             .attr('class', 'resource-content--tags')
+            .append('p')
+            .text('Tags')
             .append('ul')
             .selectAll('.resource-content--tags--tag')
             .data(version.tags)
@@ -208,13 +218,39 @@ module.exports = function ResourceView () {
                 console.log('change view to tag: ', d);
                 self.dispatch.changeViewToTag({
                     id: d,
-                    name: tags[d]
+                    name: tags[d].name()
                 });
             })
             .attr('class', 'resource-content--tags--tag')
             .append('p')
             .text(function (d) {
-                return tags[d];
+                return tags[d].name();
+            });
+
+        sel.append('div')
+            .attr('class', 'resource-content--educators')
+            .append('p')
+            .text('Author')
+            .append('ul')
+            .selectAll('.resource-content'+
+                       '--educators--educator')
+            .data(resource_model.educators())
+            .enter()
+            .append('li')
+            .on('click', function (d) {
+                console.log('change view to educator: ', d);
+                self.dispatch.changeViewToEducator({
+                    id: d,
+                    name: educators[d].name()
+                });
+            })
+            .attr('class', 'resource-content'+
+                           '--educators--educator')
+            .append('p')
+            .text(function (d) {
+                console.log(educators);
+                console.log(d);
+                return educators[d].name();
             });
     }
 
@@ -248,7 +284,7 @@ module.exports = function ResourceView () {
             .enter()
             .append('label')
             .text(function (d) {
-                return tags[d];
+                return tags[d].name();
             })
             .append('input')
             .attr('class', 'resource-content--tags--editable')
@@ -276,10 +312,10 @@ module.exports = function ResourceView () {
             .on('click', function () {
                 self.edit(false);
                 console.log('saved');
-                var selected_tags = [];
+                var selected_tags_id = [];
                 editable_tags.each(function (d, i) {
                     if (d3.select(this).property('checked')) {
-                        selected_tags.push(d);
+                        selected_tags_id.push(d);
                     }
                 });
                 var new_version = {
@@ -287,7 +323,7 @@ module.exports = function ResourceView () {
                     body: {
                         html: editable_body_html.property('value')
                     },
-                    tags: selected_tags
+                    tags: selected_tags_id
                 };
 
                 if ((new_version.title !== version.title) |

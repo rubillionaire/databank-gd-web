@@ -1,3 +1,5 @@
+var TagModel      = require('./model/tag');
+var EducatorModel = require('./model/educator');
 var ResourceModel = require('./model/resource');
 var ResourceView  = require('./view/resource');
 
@@ -5,24 +7,37 @@ module.exports = function ResourceController (context) {
     var self = {};
     var resource_data;
     var resource_model;
-    var tag_data;
+    var tag_models;
+    var educator_models;
     var view;
 
     self.render = function (d) {
         resource_data  = context.datastore.get('resources', d.id);
         resource_model = ResourceModel().data(resource_data);
 
+        tag_models = {};
         var tag_ids = resource_model.tags();
-        tag_data = {};
         tag_ids.forEach(function (d, i) {
             var tag = context.datastore.get('tags', d);
-            tag_data[tag.id] = tag.name;
+            tag_models[tag.id] = TagModel().data(tag);
+        });
+
+        educator_models = {};
+        var educator_ids = resource_model.educators();
+        educator_ids.forEach(function (d, i) {
+            console.log('educator ids');
+            console.log(d);
+            var educator = context.datastore.get('educators', d);
+            educator_models
+                [educator.id] = EducatorModel()
+                                    .data(educator);
         });
 
         view  = ResourceView()
                     .container(context.body_sel)
                     .resourceModel(resource_model)
-                    .tags(tag_data);
+                    .tags(tag_models)
+                    .educators(educator_models);
 
         if (d.version) {
             view.version(d.version);
@@ -56,6 +71,11 @@ module.exports = function ResourceController (context) {
             })
             .on('changeViewToClass.controller', function (d) {
                 console.log('changeViewToClass');
+                console.log(d);
+            })
+            .on('changeViewToEducator.controller', function (d) {
+                console.log('changeViewToEducator');
+                console.log(d);
             })
             .on('setVersion.controller', function () {
                 stash_and_rerender_state();

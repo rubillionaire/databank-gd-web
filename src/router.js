@@ -27,6 +27,12 @@ module.exports = function router (context) {
             }
         }
         else
+        if (d.controller === 'tag') {
+            console.log('route to tag');
+            console.log(d);
+            context.tag.render(d);
+        }
+        else
         if (d.controller === 'index') {
             context.index.render();
         }

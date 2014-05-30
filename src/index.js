@@ -4,6 +4,7 @@ var Data     = require('./fake_data');
 var Resource = require('./ResourceViewController');
 var Class    = require('./ClassViewController');
 var Index    = require('./IndexViewController');
+var Tag      = require('./TagViewController');
 
 var body_sel = d3.select('body');
 
@@ -23,6 +24,7 @@ function database () {
     context.class_    = Class(context);
     context.index     = Index(context);
     context.router    = Router(context);
+    context.tag       = Tag(context);
 
     (function initialize () {
         context.router.initialize();

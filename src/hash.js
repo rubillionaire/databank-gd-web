@@ -24,6 +24,10 @@ module.exports = function hashFactory () {
         if (d.controller === 'class') {
             hash = format_class_hash(d);
         }
+        else
+        if (d.controller === 'tag') {
+            hash = format_tag_hash(d);
+        }
 
         window.location = hash;
         console.log('set hash: ', hash);
@@ -102,6 +106,13 @@ module.exports = function hashFactory () {
                 }
             }
         }
+        else
+        if (args[0] === 'tag') {
+            parsed = {
+                controller: 'tag',
+                action: 'view'
+            }
+        }
 
         return parsed;
     }
@@ -139,6 +150,18 @@ module.exports = function hashFactory () {
             // edit is true & action is a string
             args.push(d.action);
         }
+
+        return '#/' + args.join('/');
+    }
+
+    function format_tag_hash (d) {
+        var args = ['tag'];
+        if (d.action === 'add') {
+            args.push(d.action);
+        }
+
+        args.push(d.tag_id);
+        args.push(d.name);
 
         return '#/' + args.join('/');
     }

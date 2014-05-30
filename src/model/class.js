@@ -2,7 +2,7 @@ module.exports = function ClassModel () {
     var self = {};
     var id;
     var title;
-    var authors = [];
+    var educators = [];
     var resources = [];
 
     self.id = function () {
@@ -15,35 +15,35 @@ module.exports = function ClassModel () {
         return self;
     };
 
-    self.authors = function () {
-        return authors;
+    self.educators = function () {
+        return educators;
     };
-    self.authors.add = function (author_id) {
-        if (!arguments.length) throw "Need author_id";
+    self.educators.add = function (educator_id) {
+        if (!arguments.length) throw "Need educator_id";
         
-        var in_authors = false;
-        authors.forEach(function (d, i) {
-            if (d === author_id) {
-                in_authors = true;
+        var in_educators = false;
+        educators.forEach(function (d, i) {
+            if (d === educator_id) {
+                in_educators = true;
             }
         });
 
-        if (!in_authors) {
-            authors.push(author_id);
+        if (!in_educators) {
+            educators.push(educator_id);
         }
 
         return self;
     };
-    self.authors.remove = function (author_id) {
-        if (!arguments.length) throw "Need author_id";
+    self.educators.remove = function (educator_id) {
+        if (!arguments.length) throw "Need educator_id";
         var index_to_remove;
-        authors.forEach(function (d, i) {
-            if (d === author_id) {
+        educators.forEach(function (d, i) {
+            if (d === educator_id) {
                 index_to_remove = i;
             }
         });
         if (index_to_remove) {
-            authors.splice(index_to_remove, 1);
+            educators.splice(index_to_remove, 1);
         }
         return self;
     };
@@ -89,14 +89,14 @@ module.exports = function ClassModel () {
             return {
                 id: id,
                 title: title,
-                authors: authors,
+                educators: educators,
                 resources: resources
             };
         }
 
         id = x.id;
         title = x.title;
-        authors = x.authors;
+        educators = x.educators;
         resources = x.resources;
 
         return self;

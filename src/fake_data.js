@@ -29,9 +29,9 @@ module.exports = function () {
                   'as possible when examining your location.'+
                   '</p>'
             },
-            tags: [0, 1, 2]
+            tags: ["maps", "doug-scott", "making-meaning"]
             }],
-            authors: [0]
+            educators: ['colin@email.com']
         }, {
             id: 1,
             versions: [{
@@ -60,7 +60,7 @@ module.exports = function () {
                   'as possible when examining your location.'+
                   '</p>'
             },
-            tags: [0, 1, 2]
+            tags: ["maps", "doug-scott", "making-meaning"]
             }, {
             title: 'Mapping: The Journey as Context for Narrative',
             body: {
@@ -87,61 +87,63 @@ module.exports = function () {
                   'as possible when examining your location.'+
                   '</p>'
             },
-            tags: [0, 1, 2]
+            tags: ["maps", "doug-scott", "making-meaning"]
             }],
-            authors: [1]
+            educators: ['anther@email.com']
         }],
         classes: [{
             id: 0,
             title: 'Colin\'s Class',
             resources: [0],
-            authors: [0]
+            educators: ['colin@email.com']
         }, {
             id: 1,
             title: 'Anther\'s Class',
             resources: [1],
-            authors: [1]
+            educators: ['anther@email.com']
         }],
-        users: [{
-            id: 0,
-            name: 'Colin Frazer',
+        educators: [{
+            id: 'colin@email.com',
+            first_name: 'Colin',
+            last_name: 'Frazer',
             resources: [0],
             classes: [0]
         }, {
-            id: 1,
-            name: 'Anther Kiley',
+            id: 'anther@email.com',
+            first_name: 'Anther',
+            last_name: 'Kiley',
             resources: [1],
             classes: [1]
         }],
         tags: [{
-          id: 0,
-          name: "Maps"
+            id: "maps",
+            name: "Maps"
         }, {
-          id: 1,
-          name: "Doug Scott"
+            id: "doug-scott",
+            name: "Doug Scott"
         }, {
-          id: 2,
-          name: "Making Meaning"
+            id: "making-meaning",
+            name: "Making Meaning"
         }]
     };
 
 
     data.resources.forEach(function (d) {
         localStorage.setItem('resources!' + d.id,
-                            JSON.stringify(d));
-    })
+                             JSON.stringify(d));
+    });
     data.classes.forEach(function (d) {
         localStorage.setItem('classes!' + d.id,
-                            JSON.stringify(d));
-    })
-    data.users.forEach(function (d) {
-        localStorage.setItem('users!' + d.id,
-                            JSON.stringify(d));
-    })
+                             JSON.stringify(d));
+    });
+    data.educators.forEach(function (d) {
+        localStorage.setItem('educators!' + d.id,
+                             JSON.stringify(d));
+    });
     data.tags.forEach(function (d) {
       localStorage.setItem('tags!' + d.id,
                            JSON.stringify(d));
-    })
+    });
 
     self.set = function (namespace, id, d) {
         console.log('setting: ' + namespace + '!' + id);
@@ -152,7 +154,7 @@ module.exports = function () {
     self.get = function (namespace, id) {
         return JSON.parse(
             localStorage.getItem(namespace + '!' + id));
-    }
+    };
 
 
     return self;
