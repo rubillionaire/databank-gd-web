@@ -15,6 +15,7 @@
 }
 
 .resource-action--versions,
-.resource-action--edit {
+.resource-action--edit,
+.resource-action--class--view {
     display: none;
 }
