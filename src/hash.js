@@ -82,9 +82,9 @@ module.exports = function hashFactory () {
             if (args.length >= 2) {
                 if (args[1].match(integer_regex)) {
                     // viewing a particular class
-                    parsed.id = args[1];
+                    parsed.class_id = args[1];
                     if (args.length >= 3) {
-                        parsed.title = args[2];
+                        parsed.class_title = args[2];
                     }
                     if ((args.length >= 4) &
                         (args[3] === 'edit')) {
@@ -133,17 +133,18 @@ module.exports = function hashFactory () {
 
     function format_class_hash (d) {
         var args = ['class'];
-
         // default action is to view
         if (d.action === 'add') {
             // action taken on the class
             // such as 'add' -- 'add to class'
             args.push(d.action);
             args.push(d.type);
+            args.push(d.resource_id);
+            args.push(escape_for_url(d.resource_title));
+        } else {
+            args.push(d.class_id);
+            args.push(escape_for_url(d.class_title));
         }
-
-        args.push(d.resource_id);
-        args.push(escape_for_url(d.resource_title));
 
         if (d.action === 'edit') {
             // should never be a state where

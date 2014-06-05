@@ -28,7 +28,8 @@
 }
 @media only screen and (min-width: 1400px) {
     
-}.resource-content--educators--educator,
+}.selectable-class-list-item,
+.resource-content--educators--educator,
 .resource-content--tags--editable,
 .resource-content-form--button,
 .resource-action--class--add,
@@ -41,4 +42,9 @@
 
 .selected p {
     font-weight: bold;
+}
+
+.resource-action--versions,
+.resource-action--edit {
+    display: none;
 }

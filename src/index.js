@@ -5,6 +5,7 @@ var Resource = require('./ResourceViewController');
 var Class    = require('./ClassViewController');
 var Index    = require('./IndexViewController');
 var Tag      = require('./TagViewController');
+var Me       = require('./MeViewController');
 
 var body_sel = d3.select('body');
 
@@ -25,6 +26,7 @@ function database () {
     context.index     = Index(context);
     context.router    = Router(context);
     context.tag       = Tag(context);
+    context.me        = Me(context);
 
     (function initialize () {
         context.router.initialize();

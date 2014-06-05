@@ -1,3 +1,4 @@
+.selectable-class-list-item,
 .resource-content--educators--educator,
 .resource-content--tags--editable,
 .resource-content-form--button,
@@ -11,4 +12,9 @@
 
 .selected p {
     font-weight: bold;
+}
+
+.resource-action--versions,
+.resource-action--edit {
+    display: none;
 }

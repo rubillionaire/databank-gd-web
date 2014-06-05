@@ -1,6 +1,6 @@
-var TagView       = require('./view/tag');
+var TagView = require('./view/tag');
 
-module.exports = function ResourceController (context) {
+module.exports = function TagController (context) {
     var self = {};
     var view;
 

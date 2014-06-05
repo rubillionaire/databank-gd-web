@@ -191,7 +191,7 @@ Same as above, but the editable version. Available to only those with priveldges
 - View/link all resources in a class
 - Remove resources from the class
 
-## `class/add/<resource_id>/<resource_title>`
+## `class/add/resource/<resource_id>/<resource_title>`
 
 `resource_id` and `resource_title` determine which resource is being added to the class.
 

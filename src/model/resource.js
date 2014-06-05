@@ -29,6 +29,9 @@ module.exports = function ResourceModel () {
     self.versions.count = function () {
         return versions.length;
     };
+    self.versions.latest = function () {
+        return self.versions.get(self.versions.count());
+    };
 
     self.educators = function () {
         return educators;

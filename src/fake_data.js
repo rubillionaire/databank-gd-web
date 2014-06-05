@@ -104,12 +104,14 @@ module.exports = function () {
         }],
         educators: [{
             id: 'colin@email.com',
+            email: 'colin@email.com',
             first_name: 'Colin',
             last_name: 'Frazer',
             resources: [0],
             classes: [0]
         }, {
             id: 'anther@email.com',
+            email: 'anther@email.com',
             first_name: 'Anther',
             last_name: 'Kiley',
             resources: [1],
@@ -124,10 +126,31 @@ module.exports = function () {
         }, {
             id: "making-meaning",
             name: "Making Meaning"
+        }],
+        me: [{
+          id: 'me',
+          classes: [],
+          resources: []
         }]
     };
 
+    var meta = {
+        resources: {
+            count: data.resources.length
+        },
+        classes: {
+            count: data.classes.length
+        },
+        educators: {
+            count: data.educators.length
+        },
+        tags: {
+            count: data.tags.length
+        }
+    };
 
+
+    // initialize the data
     data.resources.forEach(function (d) {
         localStorage.setItem('resources!' + d.id,
                              JSON.stringify(d));
@@ -144,16 +167,49 @@ module.exports = function () {
       localStorage.setItem('tags!' + d.id,
                            JSON.stringify(d));
     });
+    data.me.forEach(function (d) {
+        localStorage.setItem('me!' + d.id,
+                           JSON.stringify(d));
+    });
+
+    // initialize the metadata
+    for (var key in meta) {
+        localStorage
+            .setItem(
+                key,
+                JSON.stringify(meta[key]));
+    }
 
     self.set = function (namespace, id, d) {
-        console.log('setting: ' + namespace + '!' + id);
-        localStorage.setItem(namespace + '!' + id,
+        var update_metadata = false;
+        var item_id = namespace;
+        if (arguments.length === 3) {
+            item_id += ('!' + id);
+
+            if (namespace !== 'me') {
+                update_metadata = true;
+            }
+        }
+        console.log('setting: ' + item_id);
+        localStorage.setItem(item_id,
                              JSON.stringify(d));
+
+        if (update_metadata) {
+            var meta = self.get(namespace);
+            meta.count += 1;
+            localStorage.setItem(namespace,
+                                 JSON.stringify(meta));
+        }
     };
 
     self.get = function (namespace, id) {
+        var item_id = namespace;
+        if (arguments.length === 2) {
+            item_id += ('!' + id);
+        }
+
         return JSON.parse(
-            localStorage.getItem(namespace + '!' + id));
+            localStorage.getItem(item_id));
     };
 
 

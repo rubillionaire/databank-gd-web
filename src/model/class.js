@@ -96,8 +96,8 @@ module.exports = function ClassModel () {
 
         id = x.id;
         title = x.title;
-        educators = x.educators;
-        resources = x.resources;
+        educators = x.educators || [];
+        resources = x.resources || [];
 
         return self;
     };
