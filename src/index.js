@@ -1,6 +1,11 @@
+var d3 = require('d3');
+window.d3 = d3;
+
 var Hash     = require('./hash');
 var Router   = require('./router');
-var Data     = require('./datastore');
+
+var Model    = require('./model/index');
+
 var Resource = require('./ResourceViewController');
 var Class    = require('./ClassViewController');
 var Index    = require('./IndexViewController');
@@ -18,7 +23,8 @@ function database () {
 
     context.body_sel  = body_sel;
     context.hash      = Hash();
-    context.datastore = Data();
+
+    context.model     = Model();
 
     // view controllers
     context.resource  = Resource(context);

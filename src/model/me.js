@@ -1,7 +1,7 @@
 // Tracks Educator logged in state, and
 // keeps a reference to their Educator id
 
-module.exports = function MeModel () {
+module.exports = function MeModel (context) {
     var self = {};
     var authenticated = false;
 
@@ -59,6 +59,8 @@ module.exports = function MeModel () {
         return resources;
     };
 
+    self.dispatcher = context.dispatcher();
+
     self.data = function (x) {
         if (!arguments.length) {
             return {
@@ -68,12 +70,30 @@ module.exports = function MeModel () {
             };
         }
 
-        id        = x.id;
-        classes   = x.classes;
-        resources = x.resources;
+        id = x.id;
+
+        if (('classes' in x) &&
+            ('resources' in x)) {
+
+            classes   = x.classes;
+            resources = x.resources;
+
+            self.dispatcher.emit('loaded');
+        } else {
+            load_from_datastore();
+        }
 
         return self;
     };
+
+    self.save = function () {
+        context.datastore.local.set('me', 'me', self.data());
+        self.dispatcher.emit('saved');
+    };
+
+    function load_from_datastore () {
+        self.data(context.datastore.local.get('me', 'me'));
+    }
 
     return self;
 };

@@ -1,4 +1,4 @@
-module.exports = function ClassModel () {
+module.exports = function ClassModel (context) {
     var self = {};
     var id;
     var title;
@@ -84,6 +84,8 @@ module.exports = function ClassModel () {
         return self;
     };
 
+    self.dispatcher = context.dispatcher();
+
     self.data = function (x) {
         if (!arguments.length) {
             return {
@@ -95,12 +97,54 @@ module.exports = function ClassModel () {
         }
 
         id = x.id;
-        title = x.title;
-        educators = x.educators || [];
-        resources = x.resources || [];
+
+        if (('title' in x) &&
+            ('educators' in x) &&
+            ('resources' in x)) {
+
+            title = x.title;
+            educators = x.educators;
+            resources = x.resources;
+
+            self.dispatcher.emit('loaded');
+        } else {
+            load_from_datastore();
+        }
 
         return self;
     };
+
+    self.save = function () {
+        context
+            .datastore
+            .put(datastore_id(),
+                self.data(),
+                function (err) {
+                    if (err) {
+                        var msg = 'Error saving Resource: ' + err;
+                        return console.log(msg);
+                    }
+                    self.dispatcher.emit('saved');
+                });
+        return self;
+    };
+
+    function datastore_id () {
+        return 'class!' + self.id();
+    }
+
+    function load_from_datastore () {
+        context
+            .datastore
+            .get(datastore_id(),
+                function (err, value) {
+                    if (err) {
+                        var msg = 'Error loading Resource: ' + err;
+                        return console.log(msg);
+                    }
+                    self.data(value);
+                });
+    }
 
     return self;
 };

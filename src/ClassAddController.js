@@ -17,7 +17,7 @@ module.exports = function ClassAddController (context) {
         console.log(d);
 
         me = MeModel()
-            .data(context.datastore.get('me', 'me'));
+            .data(context.datastore.local.get('me', 'me'));
 
         // class_id: class_model
         class_models = [];
@@ -76,7 +76,8 @@ module.exports = function ClassAddController (context) {
                     .update();
 
                 // save data
-                context.datastore.set('me', 'me', me.data());
+                context.datastore
+                       .local.set('me', 'me', me.data());
                 context.datastore
                        .set('classes',
                             new_class.id(),

@@ -4,7 +4,7 @@
 
 // 'tag!graphic-design' = { tag: 'Graphic Design'}
 
-module.exports = function TagModel () {
+module.exports = function TagModel (context) {
     var self = {};
     var name;
     var resources = [];
@@ -53,6 +53,8 @@ module.exports = function TagModel () {
         return self;
     };
 
+    self.dispatcher = context.dispatcher();
+
     self.data = function (x) {
         if (!arguments.length) {
             return {
@@ -63,14 +65,54 @@ module.exports = function TagModel () {
         }
 
         id = x.id;
-        name = x.name;
-        resources = x.resources;
+        if (('name' in x) &&
+            ('resources' in x)) {
+
+            name      = x.name;
+            resources = x.resources;
+
+            self.dispatcher.emit('loaded');
+        } else {
+            load_from_datastore();
+        }
 
         return self;
     };
 
     function tag_to_id (t) {
         return t.toLowerCase().replace(/ /g, '-');
+    }
+
+    self.save = function () {
+        context
+            .datastore
+            .put(datastore_id(),
+                self.data(),
+                function (err) {
+                    if (err) {
+                        var msg = 'Error saving Tag: ' + err;
+                        return console.log(msg);
+                    }
+                    self.dispatcher.emit('saved');
+                });
+        return self;
+    };
+
+    function datastore_id () {
+        return 'tag!' + self.id();
+    }
+
+    function load_from_datastore () {
+        context
+            .datastore
+            .get(datastore_id(),
+                function (err, value) {
+                    if (err) {
+                        var msg = 'Error loading Tag: ' + err;
+                        return console.log(msg);
+                    }
+                    self.data(value);
+                });
     }
 
     return self;

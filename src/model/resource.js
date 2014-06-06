@@ -1,4 +1,4 @@
-module.exports = function ResourceModel () {
+module.exports = function ResourceModel (context) {
     var self = {};
 
     var id;
@@ -77,22 +77,36 @@ module.exports = function ResourceModel () {
         return get_unique(tags);
     };
 
+    self.dispatcher = context.dispatcher();
+
     self.data = function (x) {
         if (!arguments.length) {
             return {
-                id      : id,
-                versions: versions,
+                id        : id,
+                versions  : versions,
                 educators : educators,
-                tags    : tags,
-                classes : classes
+                tags      : tags,
+                classes   : classes
             };
         }
 
-        id       = x.id;
-        versions = x.versions;
-        educators  = x.educators;
-        tags     = x.tags;
-        classes  = x.classes;
+        id = x.id;
+
+        if (('versions' in x) &&
+            ('educators' in x) &&
+            ('tags' in x) &&
+            ('classes' in x)) {
+            
+            versions  = x.versions;
+            educators = x.educators;
+            tags      = x.tags;
+            classes   = x.classes;
+
+            self.dispatcher.emit('loaded');
+        } else {
+            
+            load_from_datastore();
+        }
 
         return self;
     };
@@ -110,6 +124,38 @@ module.exports = function ResourceModel () {
         }
 
         return a;
+    }
+
+    self.save = function () {
+        context
+            .datastore
+            .put(datastore_id(),
+                self.data(),
+                function (err) {
+                    if (err) {
+                        var msg = 'Error saving Resource: ' + err;
+                        return console.log(msg);
+                    }
+                    self.dispatcher.emit('saved');
+                });
+        return self;
+    };
+
+    function datastore_id () {
+        return 'resource!' + self.id();
+    }
+
+    function load_from_datastore () {
+        context
+            .datastore
+            .get(datastore_id(),
+                function (err, value) {
+                    if (err) {
+                        var msg = 'Error loading Resource: ' + err;
+                        return console.log(msg);
+                    }
+                    self.data(value);
+                });
     }
 
     return self;

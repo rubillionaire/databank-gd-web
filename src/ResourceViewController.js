@@ -12,8 +12,14 @@ module.exports = function ResourceController (context) {
     var view;
 
     self.render = function (d) {
-        resource_data  = context.datastore.get('resources', d.id);
-        resource_model = ResourceModel().data(resource_data);
+        resource_model = ResourceModel();
+
+        resource_model.dispatcher
+            .on('loaded', function () {
+                // continue loading;
+            });
+
+        resource_model.data({ id: d.id });
 
         tag_models = {};
         var tag_ids = resource_model.tags();

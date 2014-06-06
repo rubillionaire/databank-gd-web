@@ -133,18 +133,21 @@ module.exports = [{
     key: 'tag!maps',
     value: {
         id: "maps",
-        name: "Maps"
+        name: "Maps",
+        resources: [0, 1]
     }
 }, {
     key: 'tag!doug-scout',
     value: {
         id: "doug-scott",
-        name: "Doug Scott"
+        name: "Doug Scott",
+        resources: [0, 1]
     }
 }, {
     key: 'tag!making-meaning',
     value: {
         id: "making-meaning",
-        name: "Making Meaning"
+        name: "Making Meaning",
+        resources: [0, 1]
     }
 }];

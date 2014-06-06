@@ -1,6 +1,6 @@
 # Model
 
-All of the data that will be stored in the application.
+All of the data that will be stored in the application. Models are all have the same `save` interface exposed, and dispatch `loaded` and `saved` events when they are loaded and saved with data, since the datastore is async.
 
 ## Resource
 
