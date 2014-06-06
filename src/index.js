@@ -17,10 +17,10 @@ var Me         = require('./MeViewController');
 var Dispatcher = require('events').EventEmitter;
 
 
-database();
+databank();
 
 
-function database () {
+function databank () {
     var context = {};
 
     context.body_sel   = body_sel;
