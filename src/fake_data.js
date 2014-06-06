@@ -186,7 +186,11 @@ module.exports = function () {
         if (arguments.length === 3) {
             item_id += ('!' + id);
 
-            if (namespace !== 'me') {
+            if ((namespace !== 'me') &
+                (!self.get(namespace, id))) {
+                // `me` does not get updated
+                // if this is a new namespace+id combo,
+                // increment the metadata
                 update_metadata = true;
             }
         }
