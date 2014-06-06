@@ -5,21 +5,20 @@ var ModelResource = require('./resource');
 var ModelTag      = require('./tag');
 
 var Datastore  = require('./datastore');
-var Dispatcher = require('events').EventEmitter;
 
 
-module.exports = function Model () {
+module.exports = function Model (context) {
     var self = {};
 
-    var context = {};
-    context.datastore  = Datastore();
-    context.dispatcher = Dispatcher;
+    var model_context = {};
+    model_context.datastore  = Datastore();
+    model_context.dispatcher = context.Dispatcher;
 
-    self.class_   = ModelClass(context);
-    self.educator = ModelEducator(context);
-    self.me       = ModelMe(context);
-    self.resource = ModelResource(context);
-    self.tag      = ModelTag(context);
+    self.class_   = ModelClass(model_context);
+    self.educator = ModelEducator(model_context);
+    self.me       = ModelMe(model_context);
+    self.resource = ModelResource(model_context);
+    self.tag      = ModelTag(model_context);
 
     return self;
 };
