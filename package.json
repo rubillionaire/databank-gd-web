@@ -16,7 +16,13 @@
   "dependencies": {
     "browserify": "~4.1.5",
     "d3": "~3.4.8",
-    "qs": "~0.6.6"
+    "qs": "~0.6.6",
+    "level": "~0.18.0",
+    "engine.io-stream": "~0.4.3",
+    "multilevel": "~6.0.0",
+    "container-el": "0.0.1",
+    "level-live-stream": "~1.4.9",
+    "level-list": "~0.11.1"
   },
   "devDependencies": {
     "watchify": "~0.10.1",
@@ -24,6 +30,7 @@
     "foreman": "~0.3.0"
   },
   "scripts": {
+    "bootstrap-db": "node bootstrap/index.js",
     "build-css": "cat style/fonts.css style/layout.css style/modules.css style/theme.css > dist/site.css",
     "build-js": "browserify src/index.js -o dist/site.js",
     "build-js-lib": "cat lib/*.js > dist/lib.js",

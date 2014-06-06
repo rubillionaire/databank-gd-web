@@ -1,6 +1,6 @@
 var Hash     = require('./hash');
 var Router   = require('./router');
-var Data     = require('./fake_data');
+var Data     = require('./datastore');
 var Resource = require('./ResourceViewController');
 var Class    = require('./ClassViewController');
 var Index    = require('./IndexViewController');
