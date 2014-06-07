@@ -1,3 +1,4 @@
+var fs = require('fs');
 var level = require('level');
 var http  = require('http');
 var browserify = require('browserify');
@@ -5,14 +6,18 @@ var Engine = require('engine.io-stream');
 var multilevel = require('multilevel');
 var liveStream = require('level-live-stream');
 
+var html = fs.readFileSync(__dirname + '/index.html');
+
 // server
 var server = http.createServer(function (req, res) {
     if (req.url === '/bundle.js') {
-        browserify(__dirname + '/browser.js')
+        browserify(__dirname + '/src/index.js')
             .bundle({ debug: true })
             .pipe(res);
     } else {
-        res.end('<script src="/bundle.js"></script>');
+        res.writeHeader(200, {"Content-Type": "text/html"});
+        res.write(html);
+        res.end();
     }
 });
 

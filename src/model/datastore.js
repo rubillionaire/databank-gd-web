@@ -1,6 +1,6 @@
 var Engine = require('engine.io-stream');
 var multilevel = require('multilevel');
-var manifest = require('./manifest.json');
+var manifest = require('../../manifest.json');
 
 var db = multilevel.client(manifest);
 var con = Engine('/engine');

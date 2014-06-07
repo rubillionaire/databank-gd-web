@@ -6,7 +6,7 @@ module.exports = function EducatorModel (context) {
 
 
     self.id = function () {
-        return email_to_id(email);
+        return id ? id : email_to_id(email);
     };
 
     self.email = function () {
@@ -28,7 +28,7 @@ module.exports = function EducatorModel (context) {
 
     self.dispatcher = context.dispatcher();
 
-    self.data = function (d) {
+    self.data = function (x) {
         if (!arguments.length) {
             return {
                 id        : email_to_id(email),
@@ -38,15 +38,15 @@ module.exports = function EducatorModel (context) {
             };
         }
 
-        id = d.id;
+        id = x.id;
 
         if (('email'in x) &&
             ('first_name'in x) &&
             ('last_name'in x)) {
 
-            email      = d.email;
-            first_name = d.first_name;
-            last_name  = d.last_name;
+            email      = x.email;
+            first_name = x.first_name;
+            last_name  = x.last_name;
 
             self.dispatcher.emit('loaded');
         } else {

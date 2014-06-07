@@ -30,7 +30,8 @@ module.exports = [{
         },
         tags: ["maps", "doug-scott", "making-meaning"]
         }],
-        educators: ['colin@email.com']
+        educators: ['colin@email.com'],
+        classes: []
     }
 }, {
     key: 'resource!1',
@@ -91,7 +92,8 @@ module.exports = [{
         },
         tags: ["maps", "doug-scott", "making-meaning"]
         }],
-        educators: ['anther@email.com']
+        educators: ['anther@email.com'],
+        classes: []
     }
 }, {
     key: 'class!0',
@@ -110,7 +112,7 @@ module.exports = [{
         educators: ['anther@email.com']
     }
 }, {
-    key: 'educator!0',
+    key: 'educator!colin@email.com',
     value: {
         id: 'colin@email.com',
         email: 'colin@email.com',
@@ -120,7 +122,7 @@ module.exports = [{
         classes: [0]
     }
 }, {
-    key: 'educator!1',
+    key: 'educator!anther@email.com',
     value: {
         id: 'anther@email.com',
         email: 'anther@email.com',
@@ -137,7 +139,7 @@ module.exports = [{
         resources: [0, 1]
     }
 }, {
-    key: 'tag!doug-scout',
+    key: 'tag!doug-scott',
     value: {
         id: "doug-scott",
         name: "Doug Scott",

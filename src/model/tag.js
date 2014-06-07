@@ -6,11 +6,12 @@
 
 module.exports = function TagModel (context) {
     var self = {};
+    var id;
     var name;
     var resources = [];
 
     self.id = function () {
-        return tag_to_id(name);
+        return id ? id : tag_to_id(self.name());
     };
 
     self.name = function () {
@@ -112,6 +113,8 @@ module.exports = function TagModel (context) {
                         return console.log(msg);
                     }
                     self.data(value);
+                    console.log('loaded from db');
+                    console.log(value);
                 });
     }
 

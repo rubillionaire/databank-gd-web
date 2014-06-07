@@ -14,7 +14,8 @@ var Index      = require('./IndexViewController');
 var Tag        = require('./TagViewController');
 var Me         = require('./MeViewController');
 
-var Dispatcher = require('events').EventEmitter;
+var Events     = require('events');
+var Dispatcher = function () { return new Events.EventEmitter(); };
 
 
 databank();
@@ -27,7 +28,7 @@ function databank () {
     context.hash       = Hash();
 
     context.Dispatcher = Dispatcher;
-    context.model      = Model();
+    context.model      = Model(context);
 
     // view controllers
     context.resource   = Resource(context);

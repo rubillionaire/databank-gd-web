@@ -4,6 +4,7 @@ var ModelMe       = require('./me');
 var ModelResource = require('./resource');
 var ModelTag      = require('./tag');
 
+var ModelRelated  = require('./related');
 var Datastore  = require('./datastore');
 
 
@@ -14,11 +15,22 @@ module.exports = function Model (context) {
     model_context.datastore  = Datastore();
     model_context.dispatcher = context.Dispatcher;
 
-    self.class_   = ModelClass(model_context);
-    self.educator = ModelEducator(model_context);
-    self.me       = ModelMe(model_context);
-    self.resource = ModelResource(model_context);
-    self.tag      = ModelTag(model_context);
+    // models
+    self.class_   = functor(ModelClass, model_context);
+    self.educator = functor(ModelEducator, model_context);
+    self.me       = functor(ModelMe, model_context);
+    self.resource = functor(ModelResource, model_context);
+    self.tag      = functor(ModelTag, model_context);
+
+    // gathers related models
+    self.related  = ModelRelated(model_context)
+                        .models(self);
 
     return self;
 };
+
+function functor (x, y) {
+    return function () {
+        return new x(y);
+    };
+}

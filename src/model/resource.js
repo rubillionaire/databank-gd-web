@@ -10,7 +10,9 @@ module.exports = function ResourceModel (context) {
         return id;
     };
 
-    self.versions = {};
+    self.versions = function () {
+        return versions;
+    };
     self.versions.add = function (resource) {
         // resources are not unique.
         // the view ensures a change has occured
@@ -69,6 +71,42 @@ module.exports = function ResourceModel (context) {
         return self;
     };
 
+    self.classes = function () {
+        return classes;
+    };
+    self.classes.add = function (class_id) {
+        if (!arguments.length) throw "Need class_id";
+
+        var in_classes = false;
+        classes.forEach(function (d, i) {
+            if (d === class_id) {
+                in_classes = true;
+            }
+        });
+
+        if (!in_classes) {
+            classes.push(class_id);
+        }
+
+        return self;
+    };
+    self.classes.remove = function (class_id) {
+        if (!arguments.length) throw "Needs class_id";
+
+        var index_to_remove;
+        classes.forEach(function (d, i) {
+            if (d === class_id) {
+                index_to_remove = i;
+            }
+        });
+
+        if (index_to_remove) {
+            classes.splice(index_to_remove, 1);
+        }
+
+        return self;
+    }
+
     self.tags = function () {
         var tags = [];
         versions.forEach(function (d, i) {
@@ -83,10 +121,10 @@ module.exports = function ResourceModel (context) {
         if (!arguments.length) {
             return {
                 id        : id,
-                versions  : versions,
-                educators : educators,
-                tags      : tags,
-                classes   : classes
+                versions  : self.versions(),
+                educators : self.educators(),
+                tags      : self.tags(),
+                classes   : self.classes()
             };
         }
 
@@ -94,12 +132,10 @@ module.exports = function ResourceModel (context) {
 
         if (('versions' in x) &&
             ('educators' in x) &&
-            ('tags' in x) &&
             ('classes' in x)) {
             
             versions  = x.versions;
             educators = x.educators;
-            tags      = x.tags;
             classes   = x.classes;
 
             self.dispatcher.emit('loaded');

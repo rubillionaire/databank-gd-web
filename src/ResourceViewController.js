@@ -1,6 +1,3 @@
-var TagModel      = require('./model/tag');
-var EducatorModel = require('./model/educator');
-var ResourceModel = require('./model/resource');
 var ResourceView  = require('./view/resource');
 
 module.exports = function ResourceController (context) {
@@ -12,38 +9,9 @@ module.exports = function ResourceController (context) {
     var view;
 
     self.render = function (d) {
-        resource_model = ResourceModel();
+        view = ResourceView()
+                .container(context.body_sel);
 
-        resource_model.dispatcher
-            .on('loaded', function () {
-                // continue loading;
-            });
-
-        resource_model.data({ id: d.id });
-
-        tag_models = {};
-        var tag_ids = resource_model.tags();
-        tag_ids.forEach(function (d, i) {
-            var tag = context.datastore.get('tags', d);
-            tag_models[tag.id] = TagModel().data(tag);
-        });
-
-        educator_models = {};
-        var educator_ids = resource_model.educators();
-        educator_ids.forEach(function (d, i) {
-            console.log('educator ids');
-            console.log(d);
-            var educator = context.datastore.get('educators', d);
-            educator_models
-                [educator.id] = EducatorModel()
-                                    .data(educator);
-        });
-
-        view  = ResourceView()
-                    .container(context.body_sel)
-                    .resourceModel(resource_model)
-                    .tags(tag_models)
-                    .educators(educator_models);
 
         if (d.version) {
             view.version(d.version);
@@ -118,7 +86,30 @@ module.exports = function ResourceController (context) {
                 });
             });
 
-        view.render();
+        // setup the mechanism to render
+        // once the data is loaded
+        context.model
+               .related
+               .dispatcher
+               .on('loaded', function () {
+                    var view_data = context.model
+                                        .related
+                                        .data();
+
+                    window.tags = view_data.tags;
+
+                    view.resourceModel(view_data.resource)
+                        .tags(view_data.tags)
+                        .educators(view_data.educators)
+                        .render();
+               });
+
+        // kicks off data gathering
+        // emits `loaded` when complete
+        context.model
+               .related
+               .gather
+               .resource(d.id, ['tags', 'classes', 'educators']);
     };
 
     function stash_and_rerender_state () {
