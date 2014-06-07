@@ -16,11 +16,11 @@ module.exports = function Model (context) {
     model_context.dispatcher = context.Dispatcher;
 
     // models
-    self.class_   = functor(ModelClass, model_context);
-    self.educator = functor(ModelEducator, model_context);
-    self.me       = functor(ModelMe, model_context);
-    self.resource = functor(ModelResource, model_context);
-    self.tag      = functor(ModelTag, model_context);
+    self.class_   = factory(ModelClass, model_context);
+    self.educator = factory(ModelEducator, model_context);
+    self.me       = factory(ModelMe, model_context);
+    self.resource = factory(ModelResource, model_context);
+    self.tag      = factory(ModelTag, model_context);
 
     // gathers related models
     self.related  = ModelRelated(model_context)
@@ -29,8 +29,8 @@ module.exports = function Model (context) {
     return self;
 };
 
-function functor (x, y) {
+function factory (x, y) {
     return function () {
-        return new x(y);
+        return x(y);
     };
 }
