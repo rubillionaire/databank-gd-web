@@ -13,49 +13,8 @@ module.exports = function ClassAddController (context) {
         console.log('ClassAddController.render');
         console.log(d);
 
-        var view_data_gatherer = context.model.related();
-
-        view_data_gatherer
-            .dispatcher
-            .on('loaded', function () {
-                var view_data = view_data_gatherer.data();
-
-                class_models = view_data.classes;
-            });
-
-
-        // PICKUP
-        // Figure out what this function needs to
-        // be, in order to have the dispatcher
-        // emit loaded when it has everything it needs
-        // it doesn't fit into the same model as used
-        // with an individual resource, because there
-        // is different types of data
-
-        // then what does view_data look like when
-        // its got everything it needs
-        view_data_gatherer
-            .gather
-            .me(['classes']);
-
-        // class_id: class_model
-        class_models = [];
-        me.classes().forEach(function (d, i) {
-            var class_data = context.datastore.get('classes', d);
-            class_models.push(ClassModel().data(class_data));
-        });
-
-
-        resource_data  = context.datastore
-                                .get('resources', d.resource_id);
-
-        resource_model = ResourceModel()
-                            .data(resource_data);
-
         // views
-        class_list_view = ClassViewList()
-            .classes(class_models);
-
+        class_list_view = ClassViewList();
         class_create = ClassViewCreate();
 
         // dispatchers
@@ -79,6 +38,17 @@ module.exports = function ClassAddController (context) {
         class_create.dispatch
             .on('classCreated', function (d) {
                 // d => new class title
+
+
+                // PICKUP
+                // how do we get the total count
+                // of an item in the datastore?
+                // or increment based on the range
+                // of existing items?
+                // perhaps the metadata object is
+                // still the way to go.
+                // if so, hook it up here.
+
                 var class_data = {
                     title: d,
                     id: context.datastore
@@ -96,7 +66,8 @@ module.exports = function ClassAddController (context) {
 
                 // save data
                 context.datastore
-                       .local.set('me', 'me', me.data());
+                       .me(me.data());
+
                 context.datastore
                        .set('classes',
                             new_class.id(),
@@ -119,8 +90,31 @@ module.exports = function ClassAddController (context) {
                     .append('div')
                         .attr('class', 'class-add-container'));
 
-        class_list_view.render();
-        class_create.render();
+        var view_data_gatherer = context.model.related();
+
+        view_data_gatherer
+            .dispatcher
+            .on('loaded', function () {
+                var view_data = view_data_gatherer.data();
+
+                class_models = view_data.classes;
+
+                class_list_view
+                    .classes(class_models)
+                    .render();
+
+                class_create.render();
+            });
+
+        // then what does view_data look like when
+        // its got everything it needs
+        view_data_gatherer
+            .queue
+                .me(['classes'])
+            .queue
+                .resource(d.resource_id, [])
+            .queue
+                .start();
         
     };
 
