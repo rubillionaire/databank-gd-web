@@ -18,7 +18,8 @@
     "d3": "~3.4.8",
     "level": "~0.18.0",
     "engine.io-stream": "~0.4.3",
-    "multilevel": "~6.0.0"
+    "multilevel": "~6.0.0",
+    "express": "~4.4.1"
   },
   "devDependencies": {
     "watchify": "~0.10.1",
@@ -27,14 +28,14 @@
   },
   "scripts": {
     "bootstrap-db": "node bootstrap/index.js",
-    "build-css": "cat style/fonts.css style/layout.css style/modules.css style/theme.css > dist/site.css",
-    "build-js": "browserify src/index.js -o dist/site.js",
-    "build-js-lib": "cat lib/*.js > dist/lib.js",
-    "build-js-bundle": "cat dist/lib.js dist/site.js > dist/bundle.js",
-    "watch-css": "catw style/fonts.css style/layout.css style/modules.css style/theme.css -o dist/site.css",
-    "watch-js": "watchify src/index.js -o dist/site.js -dv",
-    "watch-js-lib": "catw lib/*.js -o dist/lib.js -v",
-    "watch-js-bundle": "catw dist/lib.js dist/site.js -o dist/bundle.js -dv",
+    "build-css": "cat style/fonts.css style/layout.css style/modules.css style/theme.css > static/dist/site.css",
+    "build-js": "browserify src/index.js -o static/dist/site.js",
+    "build-js-lib": "cat lib/*.js > static/dist/lib.js",
+    "build-js-bundle": "cat static/dist/lib.js static/dist/site.js > static/dist/bundle.js",
+    "watch-css": "catw style/fonts.css style/layout.css style/modules.css style/theme.css -o static/dist/site.css",
+    "watch-js": "watchify src/index.js -o static/dist/site.js -dv",
+    "watch-js-lib": "catw lib/*.js -o static/dist/lib.js -v",
+    "watch-js-bundle": "catw static/dist/lib.js static/dist/site.js -o static/dist/bundle.js -dv",
     "watch": "npm run watch-js & npm run watch-css & npm run watch-js-lib & npm run watch-js-bundle",
     "build": "npm run build-js & npm run build-js-lib & npm run build-css & npm run build-js-bundle"
   }

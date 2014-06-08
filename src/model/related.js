@@ -86,7 +86,6 @@ module.exports = function Related (context) {
         var gathered = 0;
 
         if (to_gather === gathered) {
-            console.log(type, ' has none');
             self.dispatcher
                 .emit('loaded--related-' + type);
         }

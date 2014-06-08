@@ -65,12 +65,6 @@ module.exports = function hashFactory () {
             if (args.length >= 3) {
                 parsed.title = args[2];
             }
-            if (args.length >= 4) {
-                parsed.version = args[3];
-            }
-            if (args.length >= 5) {
-                parsed.edit = true;
-            }
         }
         else
         if (args[0] === 'class') {
@@ -111,7 +105,7 @@ module.exports = function hashFactory () {
             parsed = {
                 controller: 'tag',
                 action: 'view'
-            }
+            };
         }
 
         return parsed;
@@ -121,12 +115,7 @@ module.exports = function hashFactory () {
         var args = ['resource',
                     d.id,
                     d.title ?
-                        escape_for_url(d.title) : 'resource',
-                    d.version];
-
-        if (d.action === 'edit') {
-            args.push('edit');
-        }
+                        escape_for_url(d.title) : 'resource'];
 
         return '#/' + args.join('/');
     }

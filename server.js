@@ -1,27 +1,20 @@
-var fs = require('fs');
-var level = require('level');
-var http  = require('http');
+var level      = require('level');
+var http       = require('http');
 var browserify = require('browserify');
-var Engine = require('engine.io-stream');
+var Engine     = require('engine.io-stream');
 var multilevel = require('multilevel');
 var liveStream = require('level-live-stream');
 
-var html = fs.readFileSync(__dirname + '/index.html');
+var http    = require('http');
+var express = require('express');
+var port    = 8000;
+var app     = express();
 
-// server
-var server = http.createServer(function (req, res) {
-    if (req.url === '/bundle.js') {
-        browserify(__dirname + '/src/index.js')
-            .bundle({ debug: true })
-            .pipe(res);
-    } else {
-        res.writeHeader(200, {"Content-Type": "text/html"});
-        res.write(html);
-        res.end();
-    }
-});
+app.use(express.static(__dirname + '/static'));
 
-server.listen(8000);
+var server = http.createServer(app);
+
+server.listen(port);
 
 // db
 var db = level(__dirname + '/db', {
@@ -38,4 +31,4 @@ var engine = Engine(function (con) {
 
 engine.attach(server, '/engine');
 
-console.log('visit http://localhost:8000');
+console.log('visit http://localhost:' + port);

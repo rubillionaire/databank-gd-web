@@ -12,14 +12,6 @@ module.exports = function ResourceController (context) {
         view = ResourceView()
                 .container(context.body_sel);
 
-
-        if (d.version) {
-            view.version(d.version);
-        }
-        if (d.edit) {
-            view.edit(d.edit);
-        }
-
         view.dispatch
             .on('changeViewToTag.controller', function (d) {
                 context.hash.is({
@@ -50,40 +42,6 @@ module.exports = function ResourceController (context) {
             .on('changeViewToEducator.controller', function (d) {
                 console.log('changeViewToEducator');
                 console.log(d);
-            })
-            .on('setVersion.controller', function () {
-                stash_and_rerender_state();
-                console.log('cancelEditable');
-            })
-            .on('setEditable.controller', function () {
-                stash_and_rerender_state();
-                console.log('cancelEditable');
-            })
-            .on('cancelEditable.controller', function () {
-                stash_and_rerender_state();
-                console.log('cancelEditable');
-            })
-            .on('saveEditable.controller', function (d) {
-                console.log('save editable.');
-                resource_model.versions.add(d);
-                context.datastore.set('resources',
-                                      resource_model.id(),
-                                      resource_model.data());
-
-                var version_number = resource_model
-                                        .versions
-                                        .count();
-                var version = resource_model
-                                    .versions
-                                    .get(version_number);
-
-                context.hash.is({
-                    controller: 'resource',
-                    action: view.edit() ? 'edit' : 'view',
-                    id: resource_model.id(),
-                    title: version.title,
-                    version: version_number
-                });
             });
 
         // setup the mechanism to render
@@ -96,7 +54,9 @@ module.exports = function ResourceController (context) {
                                         .related
                                         .data();
 
-                    window.tags = view_data.tags;
+                    resource_model = view_data.resource;
+                    tag_models = view_data.tags;
+                    educator_models = view_data.educator_models;
 
                     view.resourceModel(view_data.resource)
                         .tags(view_data.tags)

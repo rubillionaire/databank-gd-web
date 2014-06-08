@@ -1,2 +1,2 @@
-web: python -m SimpleHTTPServer 8887
+web: node server.js
 watch: npm run watch
