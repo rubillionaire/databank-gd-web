@@ -47,11 +47,15 @@ module.exports = function Related (context) {
                 .on('loaded--related-' +
                     plural_to_singular[d], function () {
 
+                    console.log('loaded--related-' +
+                                plural_to_singular[d]);
                     var i = related_to_load.indexOf(d);
                     related_to_load.splice(i, 1);
                     if (!related_to_load.length) {
                         self.dispatcher.emit('loaded');
                     }
+                    console.log('left to load');
+                    console.log(related_to_load);
                 });
         });
 
@@ -77,6 +81,7 @@ module.exports = function Related (context) {
     };
 
     function gather_related (type, id_array) {
+        console.log('gathering related ', type);
         // gathers and stashes models loaded
         // with their data, in this self.data();
         // related data is stashed in an object,

@@ -23,8 +23,10 @@ module.exports = function Model (context) {
     self.tag      = factory(ModelTag, model_context);
 
     // gathers related models
-    self.related  = ModelRelated(model_context)
-                        .models(self);
+    self.related  = function () {
+        return ModelRelated(model_context)
+                    .models(self);
+    };
 
     return self;
 };

@@ -44,19 +44,25 @@ module.exports = function ResourceController (context) {
                 console.log(d);
             });
 
+        var view_data_gatherer = context.model.related();
+
         // setup the mechanism to render
         // once the data is loaded
-        context.model
-               .related
+        view_data_gatherer
                .dispatcher
                .on('loaded', function () {
-                    var view_data = context.model
-                                        .related
+                    var view_data = view_data_gatherer
                                         .data();
 
                     resource_model = view_data.resource;
                     tag_models = view_data.tags;
                     educator_models = view_data.educator_models;
+
+                    console.log('loaded view data');
+                    console.log(view.tags.length);
+                    console.log(view.educators.length);
+
+                    window.view_data = view_data;
 
                     view.resourceModel(view_data.resource)
                         .tags(view_data.tags)
@@ -66,8 +72,7 @@ module.exports = function ResourceController (context) {
 
         // kicks off data gathering
         // emits `loaded` when complete
-        context.model
-               .related
+        view_data_gatherer
                .gather
                .resource(d.id, ['tags', 'classes', 'educators']);
     };
