@@ -58,11 +58,9 @@ module.exports = function ResourceController (context) {
                     tag_models = view_data.tags;
                     educator_models = view_data.educator_models;
 
-                    console.log('loaded view data');
-                    console.log(view.tags.length);
-                    console.log(view.educators.length);
-
                     window.view_data = view_data;
+                    console.log('loaded view data');
+                    console.log(resource_model.versions.count());
 
                     view.resourceModel(view_data.resource)
                         .tags(view_data.tags)
@@ -73,8 +71,10 @@ module.exports = function ResourceController (context) {
         // kicks off data gathering
         // emits `loaded` when complete
         view_data_gatherer
-               .gather
-               .resource(d.id, ['tags', 'classes', 'educators']);
+               .queue
+                   .resource(d.id, ['tags', 'classes', 'educators'])
+               .queue
+                   .start();
     };
 
     function stash_and_rerender_state () {
