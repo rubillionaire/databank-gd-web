@@ -1,6 +1,3 @@
-var ResourceModel    = require('./model/resource');
-var ClassModel       = require('./model/class');
-var MeModel          = require('./model/me');
 var ClassViewCreate  = require('./view/class_create');
 var ClassViewList    = require('./view/class_selectable_list');
 
@@ -16,8 +13,30 @@ module.exports = function ClassAddController (context) {
         console.log('ClassAddController.render');
         console.log(d);
 
-        me = MeModel()
-            .data(context.datastore.local.get('me', 'me'));
+        var view_data_gatherer = context.model.related();
+
+        view_data_gatherer
+            .dispatcher
+            .on('loaded', function () {
+                var view_data = view_data_gatherer.data();
+
+                class_models = view_data.classes;
+            });
+
+
+        // PICKUP
+        // Figure out what this function needs to
+        // be, in order to have the dispatcher
+        // emit loaded when it has everything it needs
+        // it doesn't fit into the same model as used
+        // with an individual resource, because there
+        // is different types of data
+
+        // then what does view_data look like when
+        // its got everything it needs
+        view_data_gatherer
+            .gather
+            .me(['classes']);
 
         // class_id: class_model
         class_models = [];

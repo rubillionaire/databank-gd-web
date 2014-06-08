@@ -18,9 +18,9 @@ module.exports = function Model (context) {
     // models
     self.class_   = factory(ModelClass, model_context);
     self.educator = factory(ModelEducator, model_context);
-    self.me       = factory(ModelMe, model_context);
     self.resource = factory(ModelResource, model_context);
     self.tag      = factory(ModelTag, model_context);
+    self.me       = ModelMe(model_context);
 
     // gathers related models
     self.related  = function () {

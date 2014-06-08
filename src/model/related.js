@@ -47,15 +47,11 @@ module.exports = function Related (context) {
                 .on('loaded--related-' +
                     plural_to_singular[d], function () {
 
-                    console.log('loaded--related-' +
-                                plural_to_singular[d]);
                     var i = related_to_load.indexOf(d);
                     related_to_load.splice(i, 1);
                     if (!related_to_load.length) {
                         self.dispatcher.emit('loaded');
                     }
-                    console.log('left to load');
-                    console.log(related_to_load);
                 });
         });
 
@@ -80,8 +76,44 @@ module.exports = function Related (context) {
         return self;
     };
 
+    self.gather.me = function (to_load) {
+        self.models.me.classes();
+
+        var related_to_load = to_load || [];
+
+        related_to_load.forEach(function (d, i) {
+            data[d] = {};
+
+            self.dispatcher
+                .on('loaded--related-' +
+                    plural_to_singular[d], function () {
+
+                        var i = related_to_load.indexOf(d);
+                        related_to_load.splice(i, 1);
+                        if (!related_to_load.length) {
+                            self.dispatcher.emit('loaded');
+                        }
+                    });
+        });
+
+        var educator = models.educator();
+
+        educator.dispatcher
+            .on('loaded', function () {
+                data.educator = educator;
+
+                related_to_load.forEach(function (d, i) {
+                    gather_related(plural_to_singular[d],
+                        educator[d]());
+                });
+            });
+
+        educator.data({ id: educator_id });
+
+        return self;
+    };
+
     function gather_related (type, id_array) {
-        console.log('gathering related ', type);
         // gathers and stashes models loaded
         // with their data, in this self.data();
         // related data is stashed in an object,
