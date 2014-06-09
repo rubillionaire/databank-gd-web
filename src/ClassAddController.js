@@ -6,7 +6,6 @@ module.exports = function ClassAddController (context) {
     var resource_data;
     var resource_model;
     var class_models;
-    var me;
     var view;
 
     self.render = function (d) {
@@ -17,6 +16,8 @@ module.exports = function ClassAddController (context) {
         class_list_view = ClassViewList();
         class_create = ClassViewCreate();
 
+        var view_data_gatherer = context.model.related();
+
         // dispatchers
         class_list_view.dispatch
             .on('classSelected', function (d) {
@@ -24,15 +25,17 @@ module.exports = function ClassAddController (context) {
                 console.log('class selected', d.title());
 
                 d.resources.add(resource_model.id());
-                context.datastore
-                       .set('classes', d.id(), d.data());
 
-                context.hash.is({
-                    controller: 'class',
-                    action: 'view',
-                    class_id: d.id(),
-                    class_title: d.title()
+                d.dispatcher.on('saved', function () {
+                    context.hash.is({
+                        controller: 'class',
+                        action: 'view',
+                        class_id: d.id(),
+                        class_title: d.title()
+                    });
                 });
+
+                d.save();
             });
 
         class_create.dispatch
@@ -51,28 +54,33 @@ module.exports = function ClassAddController (context) {
 
                 var class_data = {
                     title: d,
-                    id: context.datastore
-                               .get('classes')
-                               .count
                 };
-                console.log('created a new class: ', class_data);
-                var new_class = ClassModel().data(class_data);
 
-                me.classes.add(new_class.id());
+                // not currently listening
+                // for save. oops?
+                var new_class =
+                        context
+                            .model
+                            .class_()
+                            .data(class_data);
+
+                new_class.dispatcher
+                    .on('saved', function () {
+                        context.model
+                            .me
+                            .classes
+                            .add(new_class.id())
+                            .save();
+                    });
+
+                new_class.save();
+
+                console.log('new_class');
+                console.log(new_class);
 
                 class_list_view
                     .add_class(new_class)
                     .update();
-
-                // save data
-                context.datastore
-                       .me(me.data());
-
-                context.datastore
-                       .set('classes',
-                            new_class.id(),
-                            new_class.data());
-
             });
 
         // layout
@@ -90,14 +98,21 @@ module.exports = function ClassAddController (context) {
                     .append('div')
                         .attr('class', 'class-add-container'));
 
-        var view_data_gatherer = context.model.related();
-
         view_data_gatherer
             .dispatcher
             .on('loaded', function () {
                 var view_data = view_data_gatherer.data();
 
-                class_models = view_data.classes;
+                class_models =
+                    context.model
+                        .transform
+                        .object_to_array(view_data.classes);
+
+                resource_model = view_data.resource;
+
+                window.view_data = view_data;
+                console.log('loaded view data');
+                console.log(class_models);
 
                 class_list_view
                     .classes(class_models)

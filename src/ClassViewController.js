@@ -1,10 +1,11 @@
-var ResourceModel = require('./model/resource');
-var ClassModel = require('./model/class');
 var ClassViewResourceList = require('./view/class_resource_list');
 var ClassAdd = require('./ClassAddController');
 
 module.exports = function ClassController (context) {
     var self = {};
+    var class_view_resource_list;
+    var class_model;
+    var resource_models;
 
     self.actions = {};
 
@@ -13,26 +14,41 @@ module.exports = function ClassController (context) {
     self.render = function (hash) {
         console.log('ClassAddController.render - '+
                     'overview of classes.');
-        var class_data =
-            context.datastore.get('classes', hash.class_id);
-
-        var resource_models = [];
-        var class_model = ClassModel().data(class_data);
-
-        class_model.resources().forEach(function (d, i) {
-            var resource_data = context.datastore
-                                       .get('resources', d);
-            var resource_model = ResourceModel()
-                                    .data(resource_data);
-            resource_models.push(resource_model);
-        });
 
         class_view_resource_list = ClassViewResourceList()
-            .container(context.body_sel)
-            .classModel(class_model)
-            .resourceModels(resource_models);
+            .container(context.body_sel);
 
-        class_view_resource_list.render();
+        var view_data_gatherer = context.model.related();
+
+        view_data_gatherer
+            .dispatcher
+            .on('loaded', function () {
+                var view_data = view_data_gatherer.data();
+
+                console.log('view data loaded');
+                window.view_data = view_data;
+
+                // pull models for view
+                class_model = view_data.class_;
+
+                resource_models =
+                    context.model
+                        .transform
+                        .object_to_array(view_data.resources);
+
+                // setup and render the view
+                class_view_resource_list
+                    .classModel(class_model)
+                    .resourceModels(resource_models)
+                    .render();
+
+            });
+
+        view_data_gatherer
+            .queue
+                .class_(hash.class_id, ['resources'])
+            .queue
+                .start();
 
         return self;
     };

@@ -1,11 +1,11 @@
-// Tags are indexed by an escaped tag name
-// this way, tags are normalized, and there
-// will be no duplicate tags.
-
-// 'tag!graphic-design' = { tag: 'Graphic Design'}
+// Tags are not included at the moment
+// would need to revisit its interfaces
+// to ensure its on the same page as
+// the other models.
 
 module.exports = function TagModel (context) {
     var self = {};
+    var type = 'tag';
     var id;
     var name;
     var resources = [];
@@ -59,23 +59,16 @@ module.exports = function TagModel (context) {
     self.data = function (x) {
         if (!arguments.length) {
             return {
-                id: self.id(),
-                name: name,
+                type     : type,
+                id       : self.id(),
+                name     : name,
                 resources: resources
             };
         }
 
-        id = x.id;
-        if (('name' in x) &&
-            ('resources' in x)) {
-
-            name      = x.name;
-            resources = x.resources;
-
-            self.dispatcher.emit('loaded');
-        } else {
-            load_from_datastore();
-        }
+        id        = x.id || undefined;
+        name      = x.name || '';
+        resources = x.resources || '';
 
         return self;
     };
@@ -84,14 +77,33 @@ module.exports = function TagModel (context) {
         return t.toLowerCase().replace(/ /g, '-');
     }
 
+    self.load = function () {
+        if (!self.id()) return determine_id(self.load);
+
+        context
+            .datastore
+            .get(datastore_id(),
+                function (err, value) {
+                    if (err) {
+                        var msg = 'Error loading Resource: ' + err;
+                        return console.log(msg);
+                    }
+                    self.data(value);
+                    self.dispatcher.emit('loaded');
+                });
+        return self;
+    };
+
     self.save = function () {
+        if (!self.id()) return determine_id(self.save);
+
         context
             .datastore
             .put(datastore_id(),
                 self.data(),
                 function (err) {
                     if (err) {
-                        var msg = 'Error saving Tag: ' + err;
+                        var msg = 'Error saving Resource: ' + err;
                         return console.log(msg);
                     }
                     self.dispatcher.emit('saved');
@@ -103,19 +115,26 @@ module.exports = function TagModel (context) {
         return 'tag!' + self.id();
     }
 
-    function load_from_datastore () {
-        context
-            .datastore
-            .get(datastore_id(),
-                function (err, value) {
-                    if (err) {
-                        var msg = 'Error loading Tag: ' + err;
-                        return console.log(msg);
-                    }
-                    self.data(value);
-                    console.log('loaded from db');
-                    console.log(value);
-                });
+    function determine_id(callback) {
+        var highest_id = 0;
+
+        db.createReadStream({
+            start : type + '!',
+            end   : type + '!~',
+            keys  : true,
+            values: false
+        }).on('data', function (data) {
+            var current_id = parseInt(data.split('!')[0], 10);
+            if (current_id > highest_id) {
+                highest_id = current_id;
+            }
+        }).on('end', function () {
+            // set the value we came to find
+            id = highest_id + 1;
+            callback();
+        });
+
+        return self;
     }
 
     return self;

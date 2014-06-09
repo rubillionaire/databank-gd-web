@@ -5,6 +5,7 @@ module.exports = function MeModel (context) {
     var self = {};
     var authenticated = false;
 
+    var type = 'me';
     var id;
     var classes   = [];
     var resources = [];
@@ -64,23 +65,17 @@ module.exports = function MeModel (context) {
     self.data = function (x) {
         if (!arguments.length) {
             return {
+                type     : type,
                 id       : id,
                 classes  : classes,
                 resources: resources
             };
         }
 
-        id = x.id;
-
-        if (('classes' in x) &&
-            ('resources' in x)) {
-
-            classes   = x.classes;
-            resources = x.resources;
-
-            self.dispatcher.emit('loaded');
-        } else {
-            load_from_datastore();
+        if (typeof x === "object") {
+            id = x.id || undefined;
+            classes   = x.classes || [];
+            resources = x.resources || [];
         }
 
         return self;
@@ -89,11 +84,14 @@ module.exports = function MeModel (context) {
     self.save = function () {
         context.datastore.local.set('me', 'me', self.data());
         self.dispatcher.emit('saved');
+        return self;
     };
 
-    function load_from_datastore () {
+    self.load = function () {
         self.data(context.datastore.local.get('me', 'me'));
-    }
+        self.dispatcher.emit('loaded');
+        return self;
+    };
 
     return self;
 };

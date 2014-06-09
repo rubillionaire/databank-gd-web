@@ -1,6 +1,7 @@
 module.exports = [{
     key: 'resource!0',
     value: {
+        type: 'resource',
         id: 0,
         versions: [{
         title: 'Mapping: The Journey as Context for narrative',
@@ -36,6 +37,7 @@ module.exports = [{
 }, {
     key: 'resource!1',
     value: {
+        type: 'resource',
         id: 1,
         versions: [{
         title: 'Mapping: The Journey as Context for narrative',
@@ -98,6 +100,7 @@ module.exports = [{
 }, {
     key: 'class!0',
     value: {
+        type: 'class',
         id: 0,
         title: 'Colin\'s Class',
         resources: [0],
@@ -106,6 +109,7 @@ module.exports = [{
 }, {
     key: 'class!1',
     value: {
+        type: 'class',
         id: 1,
         title: 'Anther\'s Class',
         resources: [1],
@@ -114,6 +118,7 @@ module.exports = [{
 }, {
     key: 'educator!colin@email.com',
     value: {
+        type: 'educator',
         id: 'colin@email.com',
         email: 'colin@email.com',
         first_name: 'Colin',
@@ -124,6 +129,7 @@ module.exports = [{
 }, {
     key: 'educator!anther@email.com',
     value: {
+        type: 'educator',
         id: 'anther@email.com',
         email: 'anther@email.com',
         first_name: 'Anther',
@@ -134,6 +140,7 @@ module.exports = [{
 }, {
     key: 'tag!maps',
     value: {
+        type: 'tag',
         id: "maps",
         name: "Maps",
         resources: [0, 1]
@@ -141,6 +148,7 @@ module.exports = [{
 }, {
     key: 'tag!doug-scott',
     value: {
+        type: 'tag',
         id: "doug-scott",
         name: "Doug Scott",
         resources: [0, 1]
@@ -148,6 +156,7 @@ module.exports = [{
 }, {
     key: 'tag!making-meaning',
     value: {
+        type: 'tag',
         id: "making-meaning",
         name: "Making Meaning",
         resources: [0, 1]

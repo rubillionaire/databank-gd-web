@@ -1,6 +1,4 @@
 var level      = require('level');
-var http       = require('http');
-var browserify = require('browserify');
 var Engine     = require('engine.io-stream');
 var multilevel = require('multilevel');
 var liveStream = require('level-live-stream');

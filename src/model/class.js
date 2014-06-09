@@ -1,9 +1,18 @@
 module.exports = function ClassModel (context) {
     var self = {};
+    var type = 'class';
     var id;
     var title;
     var educators = [];
     var resources = [];
+
+    var key_finder = context.last_key()
+                            .type('class');
+
+    key_finder.dispatcher
+        .on('found', function (last_key) {
+            id = last_key + 1;
+        });
 
     self.id = function () {
         return id;
@@ -89,6 +98,7 @@ module.exports = function ClassModel (context) {
     self.data = function (x) {
         if (!arguments.length) {
             return {
+                type: type,
                 id: id,
                 title: title,
                 educators: educators,
@@ -96,25 +106,36 @@ module.exports = function ClassModel (context) {
             };
         }
 
-        id = x.id;
+        id = x.id || undefined;
+        title = x.title || '';
+        educators = x.educators || [];
+        resources = x.resources || [];
 
-        if (('title' in x) &&
-            ('educators' in x) &&
-            ('resources' in x)) {
+        return self;
+    };
 
-            title = x.title;
-            educators = x.educators;
-            resources = x.resources;
-
-            self.dispatcher.emit('loaded');
-        } else {
-            load_from_datastore();
-        }
+    self.load = function () {
+        if (!self.id()) return key_finder.find(self.load);
+        
+        context
+            .datastore
+            .get(datastore_id(),
+                function (err, value) {
+                    if (err) {
+                        var msg = 'Error loading Resource: ' +
+                                   err;
+                        return console.log(msg);
+                    }
+                    self.data(value);
+                    self.dispatcher.emit('loaded');
+                });
 
         return self;
     };
 
     self.save = function () {
+        if (!self.id()) return key_finder.find(self.save);
+
         context
             .datastore
             .put(datastore_id(),
@@ -131,19 +152,6 @@ module.exports = function ClassModel (context) {
 
     function datastore_id () {
         return 'class!' + self.id();
-    }
-
-    function load_from_datastore () {
-        context
-            .datastore
-            .get(datastore_id(),
-                function (err, value) {
-                    if (err) {
-                        var msg = 'Error loading Resource: ' + err;
-                        return console.log(msg);
-                    }
-                    self.data(value);
-                });
     }
 
     return self;

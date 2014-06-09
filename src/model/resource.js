@@ -1,10 +1,22 @@
 module.exports = function ResourceModel (context) {
     var self = {};
 
+    var type = 'resource';
     var id;
-    var versions = [];
+    var versions   = [];
     var educators  = [];
-    var classes  = [];
+    var classes    = [];
+
+    console.log('last key');
+    console.log(context.last_key);
+
+    var key_finder = context.last_key()
+                            .type('class');
+
+    key_finder.dispatcher
+        .on('found', function (last_key) {
+            id = last_key + 1;
+        });
 
     self.id = function () {
         return id;
@@ -105,7 +117,7 @@ module.exports = function ResourceModel (context) {
         }
 
         return self;
-    }
+    };
 
     self.tags = function () {
         var tags = [];
@@ -120,6 +132,7 @@ module.exports = function ResourceModel (context) {
     self.data = function (x) {
         if (!arguments.length) {
             return {
+                type      : type,
                 id        : id,
                 versions  : self.versions(),
                 educators : self.educators(),
@@ -128,21 +141,10 @@ module.exports = function ResourceModel (context) {
             };
         }
 
-        id = x.id;
-
-        if (('versions' in x) &&
-            ('educators' in x) &&
-            ('classes' in x)) {
-            
-            versions  = x.versions;
-            educators = x.educators;
-            classes   = x.classes;
-
-            self.dispatcher.emit('loaded');
-        } else {
-            
-            load_from_datastore();
-        }
+        id        = x.id || undefined;
+        versions  = x.versions || [];
+        educators = x.educators || [];
+        classes   = x.classes || [];
 
         return self;
     };
@@ -162,7 +164,26 @@ module.exports = function ResourceModel (context) {
         return a;
     }
 
+    self.load = function () {
+        if (!self.id()) return key_finder.find(self.load);
+
+        context
+            .datastore
+            .get(datastore_id(),
+                function (err, value) {
+                    if (err) {
+                        var msg = 'Error loading Resource: ' + err;
+                        return console.log(msg);
+                    }
+                    self.data(value);
+                    self.dispatcher.emit('loaded');
+                });
+        return self;
+    };
+
     self.save = function () {
+        if (!self.id()) return key_finder.find(self.save);
+
         context
             .datastore
             .put(datastore_id(),
@@ -179,19 +200,6 @@ module.exports = function ResourceModel (context) {
 
     function datastore_id () {
         return 'resource!' + self.id();
-    }
-
-    function load_from_datastore () {
-        context
-            .datastore
-            .get(datastore_id(),
-                function (err, value) {
-                    if (err) {
-                        var msg = 'Error loading Resource: ' + err;
-                        return console.log(msg);
-                    }
-                    self.data(value);
-                });
     }
 
     return self;

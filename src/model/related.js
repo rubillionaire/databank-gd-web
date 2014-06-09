@@ -10,21 +10,8 @@ module.exports = function Related (context) {
     // models and arguments that will be
     // called in order to start processing
     // the queue
-    // { model: , method: ,  args: }
+    // { func: , args: }
     var deferred = [];
-    
-    var singular_to_plural = {
-        'tag': 'tags',
-        'class_': 'classes',
-        'educator': 'educators',
-        'resource': 'resources'
-    };
-    var plural_to_singular = {
-        'tags': 'tag',
-        'classes': 'class_',
-        'educators': 'educator',
-        'resources': 'resource'
-    };
 
     var models;
 
@@ -44,7 +31,8 @@ module.exports = function Related (context) {
     self.queue.resource = function (resource_id, related) {
         var related_to_load = related ||
                               ['tags', 'classes', 'educators'];
-        add_to_queue({
+
+        add_model_plus_related_query_to_queue({
             model_key   : 'resource',
             model_id    : resource_id,
             related_keys: related_to_load,
@@ -59,6 +47,23 @@ module.exports = function Related (context) {
         return self;
     };
 
+    self.queue.class_ = function (class_id, related) {
+        var related_to_load = related || ['resources'];
+
+        add_model_plus_related_query_to_queue({
+            model_key   : 'class_',
+            model_id    : class_id,
+            related_keys: related_to_load,
+            model_map: {
+                'class_'   : models.class_,
+                'resources': models.resource
+            }
+        });
+
+        return self;
+    };
+
+
     self.queue.me = function (related) {
         // me references the local object
         
@@ -67,10 +72,10 @@ module.exports = function Related (context) {
         
 
         // store me data into the data
-        data.me = models.me.data();
+        data.me = models.me.load();
 
         // provide a model map for the 
-        // deffered model resolution,
+        // deferred model resolution,
         // it ensures data has models
         // in it, not just objects.
         var model_map = {
@@ -99,16 +104,25 @@ module.exports = function Related (context) {
     // };
 
     self.queue.start = function () {
-        console.log('started');
+        console.log('started queue: ', queue);
+        console.log('processing deferred: ', deferred);
         deferred.forEach(function (d, i) {
             d.func.apply(undefined, d.args);
         });
     };
 
-    function add_to_queue (args) {
+    function add_model_plus_related_query_to_queue (args) {
+        // add a query that gets model data
+        // and gets related models
+
         args.related_keys.forEach(add_related_keys_to_queue);
 
         var current_model = args.model_map[args.model_key]();
+
+        current_model.data({ id: args.model_id });
+
+        var queue_key = 'loaded--model-' + args.model_key;
+        queue.push(queue_key);
 
         current_model.dispatcher
             .on('loaded', function () {
@@ -121,16 +135,21 @@ module.exports = function Related (context) {
                         current_model[related_key](),
                         args.model_map);
                 });
+
+                var i = queue.indexOf(queue_key);
+                queue.splice(i, 1);
+                if (!queue.length) {
+                    self.dispatcher.emit('loaded');
+                }
             });
 
         deferred.push({
-            func: current_model.data,
-            args: [{ id: args.model_id }]
+            func: current_model.load,
+            args: []
         });
     }
 
     function add_related_keys_to_queue (d, i) {
-        console.log('add_related_keys_to_queue');
         // d => a related key to queue
 
         var related_key = d;
@@ -158,8 +177,6 @@ module.exports = function Related (context) {
     }
 
     function gather_related (type, id_array, model_map) {
-        console.log('gather_related args');
-        console.log(arguments);
         // gathers and stashes models loaded
         // with their data, in this self.data();
         // related data is stashed in an object,
@@ -174,7 +191,6 @@ module.exports = function Related (context) {
         }
 
         id_array.forEach(function (id) {
-            console.log(type);
             var type_model = model_map[type]();
 
             type_model.dispatcher
@@ -193,7 +209,7 @@ module.exports = function Related (context) {
                     }
                 });
 
-            type_model.data({ id: id });
+            type_model.data({ id: id }).load();
         });
     }
 

@@ -1,6 +1,6 @@
 module.exports = function ClassSelectableListView () {
     var self = {};
-    var classes = [];
+    var classes = {};
 
     var container_sel;
     var list_sel_wrapper;
@@ -21,9 +21,9 @@ module.exports = function ClassSelectableListView () {
 
     self.add_class = function (x) {
         if (!arguments.length) throw "Requires Class Model";
-        classes.push(x);
         console.log('class selectable list view - add class');
         console.log(classes);
+        classes.push(x);
         return self;
     };
 

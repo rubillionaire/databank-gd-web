@@ -5,15 +5,20 @@ var ModelResource = require('./resource');
 var ModelTag      = require('./tag');
 
 var ModelRelated  = require('./related');
-var Datastore  = require('./datastore');
+var Datastore     = require('./datastore');
+
+var Transform     = require('./transform');
+var LastKey       = require('./last_key');
 
 
 module.exports = function Model (context) {
     var self = {};
+    self.transform = Transform;
 
     var model_context = {};
     model_context.datastore  = Datastore();
     model_context.dispatcher = context.Dispatcher;
+    model_context.last_key   = factory(LastKey, model_context);
 
     // models
     self.class_   = factory(ModelClass, model_context);
