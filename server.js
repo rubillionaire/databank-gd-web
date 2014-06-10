@@ -5,7 +5,7 @@ var liveStream = require('level-live-stream');
 
 var http    = require('http');
 var express = require('express');
-var port    = 8000;
+var port    = process.env["PORT"];
 var app     = express();
 
 app.use(express.static(__dirname + '/static'));
