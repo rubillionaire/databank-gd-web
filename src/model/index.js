@@ -8,7 +8,7 @@ var ModelRelated  = require('./related');
 var Datastore     = require('./datastore');
 
 var Transform     = require('./transform');
-var LastKey       = require('./last_key');
+var RandomKey     = require('hat');
 
 
 module.exports = function Model (context) {
@@ -18,7 +18,7 @@ module.exports = function Model (context) {
     var model_context = {};
     model_context.datastore  = Datastore();
     model_context.dispatcher = context.Dispatcher;
-    model_context.last_key   = factory(LastKey, model_context);
+    model_context.new_key    = RandomKey.rack();
 
     // models
     self.class_   = factory(ModelClass, model_context);

@@ -7,17 +7,6 @@ module.exports = function ResourceModel (context) {
     var educators  = [];
     var classes    = [];
 
-    console.log('last key');
-    console.log(context.last_key);
-
-    var key_finder = context.last_key()
-                            .type('class');
-
-    key_finder.dispatcher
-        .on('found', function (last_key) {
-            id = last_key + 1;
-        });
-
     self.id = function () {
         return id;
     };
@@ -141,10 +130,17 @@ module.exports = function ResourceModel (context) {
             };
         }
 
-        id        = x.id || undefined;
+        console.log('data into resource');
+        console.log(x);
+
+        id        = typeof x.id !== 'undefined' ?
+                    x.id+'' :
+                    undefined;
         versions  = x.versions || [];
         educators = x.educators || [];
         classes   = x.classes || [];
+
+        console.log('current id: ', self.id());
 
         return self;
     };
@@ -165,7 +161,7 @@ module.exports = function ResourceModel (context) {
     }
 
     self.load = function () {
-        if (!self.id()) return key_finder.find(self.load);
+        if (!self.id()) id = context.new_key();
 
         context
             .datastore
@@ -182,7 +178,7 @@ module.exports = function ResourceModel (context) {
     };
 
     self.save = function () {
-        if (!self.id()) return key_finder.find(self.save);
+        if (!self.id()) id = context.new_key();
 
         context
             .datastore

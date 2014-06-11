@@ -22,7 +22,8 @@
     "express": "~4.4.1",
     "sublevel": "~2.4.0",
     "level-sublevel": "~5.2.0",
-    "level-live-stream": "~1.4.9"
+    "level-live-stream": "~1.4.9",
+    "hat": "0.0.3"
   },
   "devDependencies": {
     "watchify": "~0.10.1",

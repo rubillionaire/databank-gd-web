@@ -99,10 +99,6 @@ module.exports = function Related (context) {
         return self;
     };
 
-    // self.queue.class_ = function (class_id, related) {
-
-    // };
-
     self.queue.start = function () {
         console.log('started queue: ', queue);
         console.log('processing deferred: ', deferred);

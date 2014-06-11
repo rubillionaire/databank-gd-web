@@ -36,8 +36,6 @@ module.exports = function hashFactory () {
     };
 
     function parse_hash (hash) {
-        var integer_regex = /^\d+$/;
-
         if (hash.indexOf('#') === 0) {
             hash = hash.substr(1);
         }
@@ -74,7 +72,7 @@ module.exports = function hashFactory () {
             };
 
             if (args.length >= 2) {
-                if (args[1].match(integer_regex)) {
+                if (args[1] !== 'add') {
                     // viewing a particular class
                     parsed.class_id = args[1];
                     if (args.length >= 3) {

@@ -1,7 +1,7 @@
 var ClassViewResourceList = require('./view/class_resource_list');
 var ClassAdd = require('./ClassAddController');
 
-module.exports = function ClassController (context) {
+module.exports = function ClassViewController (context) {
     var self = {};
     var class_view_resource_list;
     var class_model;
@@ -44,6 +44,8 @@ module.exports = function ClassController (context) {
 
             });
 
+        console.log('hash.class_id');
+        console.log(hash.class_id);
         view_data_gatherer
             .queue
                 .class_(hash.class_id, ['resources'])

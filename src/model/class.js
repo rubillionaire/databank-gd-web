@@ -6,14 +6,6 @@ module.exports = function ClassModel (context) {
     var educators = [];
     var resources = [];
 
-    var key_finder = context.last_key()
-                            .type('class');
-
-    key_finder.dispatcher
-        .on('found', function (last_key) {
-            id = last_key + 1;
-        });
-
     self.id = function () {
         return id;
     };
@@ -106,8 +98,10 @@ module.exports = function ClassModel (context) {
             };
         }
 
-        id = x.id || undefined;
-        title = x.title || '';
+        id        = typeof x.id !== 'undefined' ?
+                    x.id+'' :
+                    undefined;
+        title     = x.title || '';
         educators = x.educators || [];
         resources = x.resources || [];
 
@@ -115,7 +109,7 @@ module.exports = function ClassModel (context) {
     };
 
     self.load = function () {
-        if (!self.id()) return key_finder.find(self.load);
+        if (!self.id()) id = context.new_key();
         
         context
             .datastore
@@ -134,7 +128,7 @@ module.exports = function ClassModel (context) {
     };
 
     self.save = function () {
-        if (!self.id()) return key_finder.find(self.save);
+        if (!self.id()) id = context.new_key();
 
         context
             .datastore
